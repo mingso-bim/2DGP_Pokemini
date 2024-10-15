@@ -1,13 +1,19 @@
 from pico2d import *
-from pico2d import close_canvas
-
+from Player import Player
 
 def Initialization():
-    pass
+    global world
+    global player
+
+    world = []
+
+    player = Player()
+    world.append(player)
 
 
 def Update():
-    pass
+    for obj in world:
+        obj.update()
 
 
 def Rendering():
