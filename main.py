@@ -16,8 +16,9 @@ def Update():
         obj.update()
 
 
-def Rendering():
-    pass
+def Render():
+    for obj in world:
+        obj.render()
 
 
 def Handle_event():
@@ -30,6 +31,6 @@ open_canvas()
 
 while True:
     Update()
-    Rendering()
+    Render()
 
 close_canvas()
