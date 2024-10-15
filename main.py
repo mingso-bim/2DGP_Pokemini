@@ -1,10 +1,14 @@
 from pico2d import *
 from Player import Player
+from map import *
 
 def Initialization():
+    global gameStatus
     global world
     global player
 
+    # 0-main menu
+    gameStatus = 0
     world = []
 
     player = Player()
@@ -17,17 +21,16 @@ def Update():
 
 
 def Render():
-    for obj in world:
-        obj.render()
+    if gameStatus == 0:
+        RenderMainMenu()
 
 
 def Handle_event():
     pass
 
 
-
 Initialization()
-open_canvas()
+open_canvas(500, 600)
 
 while True:
     Update()
