@@ -1,11 +1,9 @@
-from idlelib.run import handle_tk_events
-
 from pico2d import *
 import Player
 from map import *
+from UI import *
 
-def Initialization():
-    open_canvas(600, 700)
+def initialization():
     global running
     global gameStatus
     global world
@@ -14,28 +12,31 @@ def Initialization():
 
     running = True
     moving = False
-    # 0-main menu
-    gameStatus = 0
+
+    gameStatus = 0      # 0-main menu
     world = []
 
     player = Player.Player()
     world.append(player)
 
 
-def Update():
+def update():
     for obj in world:
         obj.update()
 
 
-def Render():
+def render():
     clear_canvas()
 
     if gameStatus == 0:
-        RenderMainMenu()
+        for obj in mainMenuUI:
+            obj.render()
+            update_canvas()
 
     elif gameStatus == 1:
         for obj in world:
             obj.render()
+            update_canvas()
 
 def Handle_event():
     global running, gameStatus
@@ -51,11 +52,11 @@ def Handle_event():
             player.handle_event(event)
 
 
-Initialization()
+initialization()
 
 while running:
-    Update()
-    Render()
+    update()
+    render()
     Handle_event()
 
 close_canvas()

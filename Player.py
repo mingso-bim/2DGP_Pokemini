@@ -28,10 +28,10 @@ class Player:
             width = 21
             height = 27
 
-        self.image.clip_draw(width * self.frame, height * 3, width, height, self.x, self.y,
-                             width * 2, height * 2)
+        self.image.clip_draw(width * self.frame, height * 3, width, height,
+                             self.x, self.y,  width * 2, height * 2)
         delay(0.5)
-        update_canvas()
+
 
     def handle_event(self, _event):
         if _event.type == SDL_KEYDOWN:
