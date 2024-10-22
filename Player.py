@@ -5,7 +5,7 @@ class Player:
     def __init__(self):
         self.name = "player"
         self.gender = "male"
-        self.image = load_image("resource/trainer_boy_sprite.png")
+        self.image = None
         self.frame = 1
         self.x, self.y = 300, 300
         self.moveable = False
@@ -13,11 +13,22 @@ class Player:
         self.items = []
 
 
+    def setGender(self, _gender):
+        self.gender = _gender
+        if _gender == "male":
+            load_image("resource/trainer_boy_sprite.png")
+        else:
+            load_image("resource/trainer_girl_sprite.png")
+
+
     def update(self):
         pass
 
 
     def render(self):
+        if self.image == None:
+            return
+
         width, height = 0, 0
         self.frame = (self.frame + 1) % 3
         # female
