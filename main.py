@@ -2,6 +2,7 @@ from pico2d import *
 import Player
 from map import *
 from mainMenu import *
+import intro
 
 def initialization():
     global running
@@ -20,10 +21,14 @@ def initialization():
     player = Player.Player()
     world.append(player)
 
+    intro = intro.Intro()
+
 
 def update():
     for obj in world:
         obj.update()
+
+    intro.update()
 
 
 def render():
@@ -40,8 +45,7 @@ def render():
         update_canvas()
 
     elif gameStatus == 2:
-        for obj in introUI:
-            obj.render()
+        intro.render()
         update_canvas()
 
     print(gameStatus)
@@ -61,7 +65,10 @@ def Handle_event():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_F3:
             gameStatus = 2
         else:
-            player.handle_event(event)
+            if intro.enable:
+                intro.handle_event(event)
+            else:
+                player.handle_event(event)
 
 
 initialization()
