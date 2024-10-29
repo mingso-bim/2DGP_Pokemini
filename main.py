@@ -68,7 +68,8 @@ def Handle_event():
             if intro.enable:
                 intro.handle_event(event)
             else:
-                player.handle_event(event)
+                if event.type in (SDL_KEYDOWN, SDL_KEYUP):
+                    player.handle_event(event)
 
 
 initialization()

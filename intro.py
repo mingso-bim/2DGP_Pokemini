@@ -58,7 +58,7 @@ class Intro:
 
 
     def checkScriptIdx(self):
-
+        pass
 
 
     def initScript(self):

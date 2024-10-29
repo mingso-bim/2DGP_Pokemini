@@ -1,5 +1,6 @@
 from pico2d import *
-
+from stateMachine import *
+from state import *
 
 class Player:
     def __init__(self):
@@ -11,6 +12,17 @@ class Player:
         self.moveable = False
         self.pokemons = []
         self.items = []
+        self.stateMachine = StateMachine(self)
+        self.stateMachine.start(Idle)
+        self.stateMachine.setTransitions(
+            {
+                Idle: { rightDown: Run, rightUp: Run, leftDown: Run, leftUp: Run,
+                        upDown: Run, upUp: Run, downDown: Run, downUp: Run },
+                Run: { rightDown: Idle, rightUp: Idle, leftDown: Idle, leftUp: Idle,
+                        upDown: Idle, upUp: Idle, downDown: Idle, downUp: Idle }
+
+            }
+        )
 
 
     def setGender(self, _gender):
@@ -22,12 +34,14 @@ class Player:
 
 
     def update(self):
-        pass
+        self.stateMachine.update()
 
 
     def render(self):
         if self.image == None:
             return
+
+        self.stateMachine.render()
 
         width, height = 0, 0
         self.frame = (self.frame + 1) % 3
@@ -44,15 +58,6 @@ class Player:
         delay(0.5)
 
 
-    def handle_event(self, _event):
-        if _event.type == SDL_KEYDOWN:
-            if _event.key == SDLK_RIGHT:
-                self.x += 1
-            elif _event.key == SDLK_LEFT:
-                self.x -= 1
-            elif _event.key == SDLK_UP:
-                self.y += 1
-            elif _event.key == SDLK_DOWN:
-                self.y -= 1
-
+    def handle_event(self, e):
+        self.stateMachine.addEvent('INPUT', e)
 
