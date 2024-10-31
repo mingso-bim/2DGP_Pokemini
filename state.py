@@ -1,5 +1,6 @@
 from sdl2 import *
 
+
 def rightDown(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
 
@@ -41,35 +42,61 @@ def space_down(e):
 
 class Run:
     @staticmethod
-    def enter():
+    def enter(player, e):
+        if rightDown(e) or leftUp(e):
+            player.dir = 0
+        elif leftDown(e) or rightUp(e):
+            player.dir = 2
+        elif upDown(e) or downUp(e):
+            player.dir = 1
+        elif downDown(e) or upUp(e):
+            player.dir = 3
+
+    @staticmethod
+    def exit(player, e):
         pass
 
     @staticmethod
-    def exit():
-        pass
+    def do(player):
+        if player.dir == 0:
+            player.x += player.speed
+        elif player.dir == 1:
+            player.y += player.speed
+        elif player.dir == 2:
+            player.x -= player.speed
+        elif player.dir == 3:
+            player.y -= player.speed
+
+        player.frame = (player.frame + 1) % 3
 
     @staticmethod
-    def do():
-        pass
+    def render(player):
+        if player.image == None:
+            return
 
-    @staticmethod
-    def render():
-        pass
+        player.image.clip_draw(player.width * player.frame, player.height * player.dir,
+                               player.width, player.height,
+                             player.x, player.y,  player.width * 2, player.height * 2)
 
 
 class Idle:
     @staticmethod
-    def enter():
+    def enter(player, e):
         pass
 
     @staticmethod
-    def exit():
+    def exit(player, e):
         pass
 
     @staticmethod
-    def do():
+    def do(player):
         pass
 
     @staticmethod
-    def render():
-        pass
+    def render(player):
+        if player.image == None:
+            return
+
+        player.image.clip_draw(player.width * 1, player.height * player.dir,
+                               player.width, player.height,
+                             player.x, player.y,  player.width * 2, player.height * 2)

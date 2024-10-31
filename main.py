@@ -19,9 +19,11 @@ def initialization():
     world = []
 
     player = Player.Player()
+    player.setGender("female")
     world.append(player)
 
     intro = intro.Intro()
+    intro.enable = True
 
 
 def update():
@@ -48,7 +50,6 @@ def render():
         intro.render()
         update_canvas()
 
-    print(gameStatus)
 
 def Handle_event():
     global running, gameStatus

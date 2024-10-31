@@ -7,8 +7,11 @@ class Player:
         self.name = "player"
         self.gender = "male"
         self.image = None
+        self.width, self.height = 0, 0
         self.frame = 1
         self.x, self.y = 300, 300
+        self.dir = 0
+        self.speed = 1
         self.moveable = False
         self.pokemons = []
         self.items = []
@@ -28,9 +31,13 @@ class Player:
     def setGender(self, _gender):
         self.gender = _gender
         if _gender == "male":
-            load_image("resource/trainer_boy_sprite.png")
+            self.image = load_image("resource/trainer_boy_sprite.png")
+            self.width = 21
+            self.height = 27
         else:
-            load_image("resource/trainer_girl_sprite.png")
+            self.image = load_image("resource/trainer_girl_sprite.png")
+            self.width = 31
+            self.height = 30
 
 
     def update(self):
@@ -38,26 +45,9 @@ class Player:
 
 
     def render(self):
-        if self.image == None:
-            return
-
         self.stateMachine.render()
-
-        width, height = 0, 0
-        self.frame = (self.frame + 1) % 3
-        # female
-        if self.gender == "female":
-            width = 31
-            height = 30
-        else:
-            width = 21
-            height = 27
-
-        self.image.clip_draw(width * self.frame, height * 3, width, height,
-                             self.x, self.y,  width * 2, height * 2)
-        delay(0.5)
 
 
     def handle_event(self, e):
-        self.stateMachine.addEvent('INPUT', e)
+        self.stateMachine.addEvent(('INPUT', e))
 

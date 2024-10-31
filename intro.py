@@ -4,7 +4,7 @@ from UI import game_width, game_height
 
 class Intro:
     def __init__(self):
-        self.enable = True
+        self.enable = False
         self.phase = 0
         self.frame = 0
         self.select = -1
@@ -26,27 +26,26 @@ class Intro:
             self.profMa.clip_draw(23, 35, 1, 1, game_width/2, game_height/2, game_width, game_height)
             self.textbox.draw(self.textboxLoc[0], self.textboxLoc[1], game_width * 0.95, game_height * 0.18)
             self.font.draw(self.textboxLoc[0] - game_width * 0.4, self.textboxLoc[0], self.script[self.scriptIdx])
+            print(self.scriptIdx)
             return
 
         self.background.draw(game_width/2, game_height/2, game_width, game_height)
         if self.phase == 1:
             self.profMa.clip_draw(0, 0, 67, 133, game_width/2, game_height * 0.75, 134, 266)
             self.textbox.draw(self.textboxLoc[0], self.textboxLoc[1], game_width * 0.95, game_height * 0.18)
+            self.font.draw(self.textboxLoc[0] - game_width * 0.4, self.textboxLoc[0], self.script[self.scriptIdx])
 
         elif self.phase == 2:
             self.profMa.clip_draw(67, 0, 82, 133, game_width / 2, game_height * 0.75, 164, 266)
             self.textbox.draw(self.textboxLoc[0], self.textboxLoc[1], game_width * 0.95, game_height * 0.18)
+            self.font.draw(self.textboxLoc[0] - game_width * 0.4, self.textboxLoc[0], self.script[self.scriptIdx])
 
 
     def update(self):
         self.frame = (self.frame+1) % 4
-        delay(0.3)
-        if self.scriptIdx == 2 and self.scriptIdx == 9:
-            self.phase += 1
 
     def handle_event(self, _event):
-        self.checkScriptIdx()
-        if _event.type == SDL_KEYDOWN and self.phase == 2:
+        if _event.type == SDL_KEYDOWN and self.phase == 3:
             if self.select == -1:
                 self.select = 0
             elif _event.key == SDLK_LEFT and self.select == 1:
@@ -55,10 +54,14 @@ class Intro:
                 self.select = self.select + 1
         elif _event.type == SDL_KEYDOWN and _event.key == SDLK_SPACE:
             self.scriptIdx += 1
+            self.checkScriptIdx()
 
 
     def checkScriptIdx(self):
-        pass
+        if self.scriptIdx == 1 or self.scriptIdx == 9:
+            self.phase += 1
+        if self.scriptIdx == 17:
+            print('gender select event')
 
 
     def initScript(self):
