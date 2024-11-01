@@ -34,7 +34,7 @@ class Player:
             self.image = load_image("resource/trainer_boy_sprite.png")
             self.width = 21
             self.height = 27
-        else:
+        elif _gender == 'female':
             self.image = load_image("resource/trainer_girl_sprite.png")
             self.width = 31
             self.height = 30

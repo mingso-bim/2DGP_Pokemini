@@ -22,7 +22,7 @@ def initialization():
     player.setGender("female")
     world.append(player)
 
-    intro = intro.Intro()
+    intro = intro.Intro(player)
     intro.enable = True
 
 
