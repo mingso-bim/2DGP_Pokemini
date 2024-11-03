@@ -31,7 +31,6 @@ class Intro:
             self.profMa.clip_draw(23, 35, 1, 1, game_width/2, game_height/2, game_width, game_height)
             self.textbox.draw(self.textboxLoc[0], self.textboxLoc[1], game_width * 0.95, game_height * 0.18)
             self.font.draw(self.textboxLoc[0] - game_width * 0.4, self.textboxLoc[0], self.script[self.scriptIdx])
-            print(self.scriptIdx)
             return
 
         self.background.draw(game_width/2, game_height/2, game_width, game_height)
@@ -111,7 +110,6 @@ class Intro:
                           self.player.name + self.script[self.scriptIdx])
         else:
             self.font.draw(self.textboxLoc[0] - game_width * 0.4, self.textboxLoc[0], self.script[self.scriptIdx])
-            print(self.phase, self.scriptIdx, self.select)
 
     def update(self):
         self.frame = (self.frame+1) % 4

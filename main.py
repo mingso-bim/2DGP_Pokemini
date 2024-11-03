@@ -1,7 +1,7 @@
 from pico2d import *
 import Player
+import mainMenu
 from map import *
-from mainMenu import *
 import intro
 
 def initialization():
@@ -11,43 +11,44 @@ def initialization():
     global player
     global moving
     global intro
+    global mainMenuUI
 
     running = True
     moving = False
 
-    gameStatus = 2      # 0-main menu
     world = []
 
     player = Player.Player()
-    player.setGender("female")
     world.append(player)
 
     intro = intro.Intro(player)
-    intro.enable = True
-
+    mainMenuUI = mainMenu.MainMenu(intro)
 
 def update():
-    for obj in world:
-        obj.update()
-
-    intro.update()
+    if intro.enable:
+        intro.update()
+    elif mainMenuUI.enable:
+        mainMenuUI.update()
+    else:
+        for obj in world:
+            obj.update()
 
 
 def render():
     clear_canvas()
 
-    if gameStatus == 0:             # main menu
-        for obj in mainMenuUI:
+    if intro.enable:
+        intro.render()
+        update_canvas()
+
+    elif mainMenuUI.enable:
+        for obj in mainMenuUI.objs:
             obj.render()
         update_canvas()
 
-    elif gameStatus == 1:           # in game world
+    else:
         for obj in world:
             obj.render()
-        update_canvas()
-
-    elif gameStatus == 2:
-        intro.render()
         update_canvas()
 
 
@@ -66,7 +67,9 @@ def Handle_event():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_F3:
             gameStatus = 2
         else:
-            if intro.enable:
+            if mainMenuUI.enable:
+                mainMenuUI.handle_event(event)
+            elif intro.enable:
                 intro.handle_event(event)
             else:
                 if event.type in (SDL_KEYDOWN, SDL_KEYUP):
