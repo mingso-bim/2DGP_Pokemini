@@ -54,17 +54,28 @@ class Run:
 
     @staticmethod
     def exit(player, e):
-        pass
+        print(f'player x:{player.x}, player y:{player.y}')
 
     @staticmethod
     def do(player):
         if player.dir == 0:
+            if player.x > 590:
+                return
             player.x += player.speed
+
         elif player.dir == 1:
+            if player.y > 690:
+                return
             player.y += player.speed
+
         elif player.dir == 2:
+            if player.x < 10:
+                return
             player.x -= player.speed
+
         elif player.dir == 3:
+            if player.y < 380:
+                return
             player.y -= player.speed
 
         player.frame = (player.frame + 1) % 3

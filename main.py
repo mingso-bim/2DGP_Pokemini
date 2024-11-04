@@ -10,17 +10,19 @@ def initialization():
     global running
     global gameStatus
     global intro, mainMenuUI
+    global player
 
     running = True
 
-    p = player.Player()
+    player = player.Player()
+    player.setDebugMode()
     gameWorld.addObject(player, 1)
 
-    intro = intro.Intro(p)
+    intro = intro.Intro(player)
     mainMenuUI = mainMenu.MainMenu(intro)
 
     m = map.Map()
-    gameWorld.addObject(map, 0)
+    gameWorld.addObject(m, 0)
 
     pad = map.TouchPad()
     gameWorld.addObject(pad, 0)
@@ -51,7 +53,7 @@ def render():
 
 
 def Handle_event():
-    global running, gameStatus
+    global running
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:

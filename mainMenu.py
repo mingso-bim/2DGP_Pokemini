@@ -1,11 +1,12 @@
 from pico2d import *
 from gameWorld import game_height, game_width
+from UI import UI, Text
 
 open_canvas(game_width, game_height)
 
 class MainMenu:
     def __init__(self, _intro):
-        self.enable = True
+        self.enable = False
         self.select = 0
         self.objs = []
         self.intro = _intro

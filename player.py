@@ -5,11 +5,11 @@ from state import *
 class Player:
     def __init__(self):
         self.name = "player"
-        self.gender = "male"
+        self.gender = None
         self.image = None
         self.width, self.height = 0, 0
         self.frame = 1
-        self.x, self.y = 300, 300
+        self.x, self.y = 300, 500
         self.dir = 0
         self.speed = 1
         self.moveable = False
@@ -38,6 +38,11 @@ class Player:
             self.image = load_image("resource/trainer_girl_sprite.png")
             self.width = 31
             self.height = 30
+
+
+    def setDebugMode(self):
+        self.setGender('female')
+        self.moveable = True
 
 
     def update(self):
