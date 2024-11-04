@@ -1,5 +1,5 @@
 from pico2d import *
-from UI import *
+from gameWorld import game_height, game_width
 
 open_canvas(game_width, game_height)
 

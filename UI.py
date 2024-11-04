@@ -1,8 +1,5 @@
 from pico2d import *
 
-game_width = 600
-game_height = 700
-
 class UI:
     def __init__(self, _x, _y, _width, _height):
         self.image = None

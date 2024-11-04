@@ -1,4 +1,4 @@
-import Player
+import player
 
 class StateMachine:
     def __init__(self, o):

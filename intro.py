@@ -1,5 +1,5 @@
 from pico2d import *
-from UI import game_width, game_height
+from gameWorld import game_width, game_height
 
 
 class Intro:

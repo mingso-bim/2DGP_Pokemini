@@ -1,28 +1,29 @@
 from pico2d import *
-import Player
+import player
 import mainMenu
-from map import *
+import map
 import intro
+import gameWorld
+
 
 def initialization():
     global running
     global gameStatus
-    global world
-    global player
-    global moving
-    global intro
-    global mainMenuUI
+    global intro, mainMenuUI
 
     running = True
-    moving = False
 
-    world = []
+    p = player.Player()
+    gameWorld.addObject(player, 1)
 
-    player = Player.Player()
-    world.append(player)
-
-    intro = intro.Intro(player)
+    intro = intro.Intro(p)
     mainMenuUI = mainMenu.MainMenu(intro)
+
+    m = map.Map()
+    gameWorld.addObject(map, 0)
+
+    pad = map.TouchPad()
+    gameWorld.addObject(pad, 0)
 
 def update():
     if intro.enable:
@@ -30,9 +31,7 @@ def update():
     elif mainMenuUI.enable:
         mainMenuUI.update()
     else:
-        for obj in world:
-            obj.update()
-
+        gameWorld.update()
 
 def render():
     clear_canvas()
@@ -47,8 +46,7 @@ def render():
         update_canvas()
 
     else:
-        for obj in world:
-            obj.render()
+        gameWorld.render()
         update_canvas()
 
 
@@ -60,12 +58,6 @@ def Handle_event():
             running = False
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_F1:
-            gameStatus = 0
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_F2:
-            gameStatus = 1
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_F3:
-            gameStatus = 2
         else:
             if mainMenuUI.enable:
                 mainMenuUI.handle_event(event)
