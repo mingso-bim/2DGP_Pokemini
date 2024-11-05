@@ -53,6 +53,7 @@ class Player:
         self.stateMachine.render()
 
 
-    def handle_event(self, e):
+    def handle_events(self, e):
         self.stateMachine.addEvent(('INPUT', e))
 
+p = Player()
