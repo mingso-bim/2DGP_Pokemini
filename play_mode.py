@@ -13,6 +13,10 @@ def init():
     map = Map()
     gameWorld.addObject(map, 0)
 
+    debugMode()
+
+def debugMode():
+    p.setGender('female')
 
 def finish():
     gameWorld.clear()

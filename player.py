@@ -10,7 +10,7 @@ class Player:
         self.width, self.height = 0, 0
         self.frame = 1
         self.x, self.y = 300, 500
-        self.dir = 0
+        self.dir = 1
         self.speed = 1
         self.moveable = False
         self.pokemons = []

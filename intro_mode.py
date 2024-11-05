@@ -1,10 +1,12 @@
 from pico2d import *
+from select import select
+
 import game_framework
 from gameWorld import game_width, game_height, p
 import play_mode
 
 def init():
-    global phase, frame, select, script, scriptIdx, player, playerX, textboxLoc
+    global phase, frame, select, script, scriptIdx, player, playerX, textboxLoc, playerFrame
     phase = 0
     frame = 0
     select = 0
@@ -12,6 +14,7 @@ def init():
     scriptIdx = 0
     player = p
     playerX = 0
+    playerFrame = 0
     textboxLoc = [game_width / 2, game_height * 0.38]
 
     global font, background, profMa, walkingPlayer, textbox, miniTextbox, arrow, smallPlayer
@@ -45,7 +48,7 @@ def update():
         game_framework.change_mode(play_mode)
 
 def draw():
-    global phase, frame, select, script, scriptIdx, player, playerX, textboxLoc
+    global phase, frame, select, script, scriptIdx, player, playerX, textboxLoc, playerFrame
     global font, background, profMa, walkingPlayer, textbox, miniTextbox, arrow, smallPlayer
     clear_canvas()
 
@@ -119,13 +122,16 @@ def draw():
         walkingPlayer.clip_draw(400, 0, 51, 117,
                                      game_width * 0.5, game_height * 0.7, 102, 234)
     elif phase == 9:
-        if player.gender == 'male':
-            smallPlayer.clip_draw(52 * frame, 0, 46, 123,
-                                       game_width * 0.5, game_height * 0.7, 102, 146)
-        elif player.gender == 'female':
-            smallPlayer.clip_draw(350 + 52 * frame, 0, 48, 123,
-                                       game_width * 0.5, game_height * 0.7, 102, 146)
-        delay(0.5)
+        while playerFrame < 6:
+            clear_canvas()
+            background.draw(game_width / 2, game_height / 2, game_width, game_height)
+            phase9Render(playerFrame)
+            textbox.draw(textboxLoc[0], textboxLoc[1], game_width * 0.95, game_height * 0.18)
+            font.draw(textboxLoc[0] - game_width * 0.4, textboxLoc[0], script[scriptIdx])
+            playerFrame += 1
+            delay(0.6)
+            update_canvas()
+        phase += 1
 
     textbox.draw(textboxLoc[0], textboxLoc[1], game_width * 0.95, game_height * 0.18)
     if scriptIdx == 21:
@@ -142,10 +148,11 @@ def checkScriptIdx():
         phase += 1
 
 def nextScript():
-    global scriptIdx
+    global scriptIdx, select
     if scriptIdx == 33:
         return
     scriptIdx += 1
+    select = 0
 
 def phase3Event(_event):
     global phase, select, player, playerX
@@ -192,6 +199,42 @@ def phase5Event(_event):
                     player.name = '아리'
             phase += 1
             nextScript()
+
+def phase9Render(frame):
+    global smallPlayer, player
+    if player.gender == 'male':
+        if frame == 0:
+            smallPlayer.clip_draw(0, 0, 50, 123,
+                              game_width * 0.5, game_height * 0.7, 100, 246)
+        elif frame == 1:
+            smallPlayer.clip_draw(55, 0, 44, 123,
+                              game_width * 0.5, game_height * 0.7, 88, 246)
+        elif frame == 2:
+            smallPlayer.clip_draw(110, 0, 35, 123,
+                              game_width * 0.5, game_height * 0.7, 70, 246)
+        elif frame == 3:
+            smallPlayer.clip_draw(165, 0, 29, 123,
+                              game_width * 0.5, game_height * 0.7, 58, 246)
+        elif frame == 4:
+            smallPlayer.clip_draw(220, 0, 22, 123,
+                              game_width * 0.5, game_height * 0.7, 44, 246)
+
+    elif player.gender == 'female':
+        if frame == 0:
+            smallPlayer.clip_draw(345, 0, 58, 123,
+                              game_width * 0.5, game_height * 0.7, 116, 246)
+        elif frame == 1:
+            smallPlayer.clip_draw(408, 0, 46, 123,
+                                  game_width * 0.5, game_height * 0.7, 92, 246)
+        elif frame == 2:
+            smallPlayer.clip_draw(460, 0, 34, 123,
+                                  game_width * 0.5, game_height * 0.7, 68, 246)
+        elif frame == 3:
+            smallPlayer.clip_draw(499, 0, 26, 123,
+                                  game_width * 0.5, game_height * 0.7, 52, 246)
+        elif frame == 4:
+            smallPlayer.clip_draw(529, 0, 22, 123,
+                                  game_width * 0.5, game_height * 0.7, 44, 246)
 
 def handle_events():
     events = get_events()
