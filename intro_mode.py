@@ -55,7 +55,7 @@ def draw():
     if phase == 0:
         profMa.clip_draw(23, 35, 1, 1, game_width / 2, game_height / 2, game_width, game_height)
         textbox.draw(textboxLoc[0], textboxLoc[1], game_width * 0.95, game_height * 0.18)
-        font.draw(textboxLoc[0] - game_width * 0.4, textboxLoc[0], script[scriptIdx])
+        font.draw(textboxLoc[0] - game_width * 0.4, game_height * 0.42, script[scriptIdx])
         update_canvas()
         return
 
@@ -135,10 +135,10 @@ def draw():
 
     textbox.draw(textboxLoc[0], textboxLoc[1], game_width * 0.95, game_height * 0.18)
     if scriptIdx == 21:
-        font.draw(textboxLoc[0] - game_width * 0.4, textboxLoc[0],
+        font.draw(textboxLoc[0] - game_width * 0.4, game_height * 0.42,
                        player.name + script[scriptIdx])
     else:
-        font.draw(textboxLoc[0] - game_width * 0.4, textboxLoc[0], script[scriptIdx])
+        font.draw(textboxLoc[0] - game_width * 0.4, game_height * 0.42, script[scriptIdx])
 
     update_canvas()
 
