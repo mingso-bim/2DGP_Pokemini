@@ -16,7 +16,7 @@ def init():
     debugMode()
 
 def debugMode():
-    p.setGender('female')
+    p.setGender('male')
 
 def finish():
     gameWorld.clear()
