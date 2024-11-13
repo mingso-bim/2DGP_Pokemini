@@ -3,8 +3,10 @@ from gameWorld import game_width, game_height
 
 
 class Map:
+    house = None
+
     def __init__(self):
-        self.house = load_image('resource/map/house.png')
+        Map.house = load_image('resource/map/house.png')
         self.curImage = self.house
 
     def render(self):

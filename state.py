@@ -59,6 +59,7 @@ class Run:
     @staticmethod
     def exit(player, e):
         print(f'player x:{player.x}, player y:{player.y}')
+        player.frame = 0
 
     @staticmethod
     def do(player):

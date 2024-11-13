@@ -1,9 +1,11 @@
 from pico2d import *
-from select import select
-
 import game_framework
 from gameWorld import game_width, game_height, p
 import play_mode
+
+TIME_PER_ACTION = 0.9
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 4
 
 def init():
     global phase, frame, select, script, scriptIdx, player, playerX, textboxLoc, playerFrame
@@ -43,7 +45,7 @@ def finish():
 
 def update():
     global frame, phase
-    frame = (frame + 1) % 4
+    frame = (frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
     if phase == 10:
         game_framework.change_mode(play_mode)
 
@@ -70,10 +72,10 @@ def draw():
 
     elif phase == 3:
         if select == 0:
-            walkingPlayer.clip_draw(3 + 46 * frame, 0, 47, 117, game_width * 0.3, game_height * 0.7, 100, 234)
+            walkingPlayer.clip_draw(3 + 46 * int(frame), 0, 47, 117, game_width * 0.3, game_height * 0.7, 100, 234)
             walkingPlayer.clip_draw(189 + 52, 0, 53, 117, game_width * 0.7, game_height * 0.7, 100, 234)
         elif select == 1:
-            walkingPlayer.clip_draw(189 + 52 * frame, 0, 53, 117, game_width * 0.7, game_height * 0.7, 100,
+            walkingPlayer.clip_draw(189 + 52 * int(frame), 0, 53, 117, game_width * 0.7, game_height * 0.7, 100,
                                          234)
             walkingPlayer.clip_draw(3, 0, 47, 117, game_width * 0.3, game_height * 0.7, 100, 234)
         else:
@@ -84,18 +86,18 @@ def draw():
         if player.gender == 'male':
             if playerX < 0.5:
                 playerX += 0.01
-            walkingPlayer.clip_draw(3 + 46 * frame, 0, 47, 117,
+            walkingPlayer.clip_draw(3 + 46 * int(frame), 0, 47, 117,
                                          game_width * playerX, game_height * 0.7, 100, 234)
         elif player.gender == 'female':
             if playerX > 0.5:
                 playerX -= 0.01
-            walkingPlayer.clip_draw(189 + 52 * frame, 0, 53, 117,
+            walkingPlayer.clip_draw(189 + 52 * int(frame), 0, 53, 117,
                                          game_width * playerX, game_height * 0.7, 100, 234)
 
     elif phase == 5:
         miniTextbox.draw(game_width * 0.8, game_height * 0.58, 226, 88)
         if player.gender == 'male':
-            walkingPlayer.clip_draw(3 + 46 * frame, 0, 47, 117,
+            walkingPlayer.clip_draw(3 + 46 * int(frame), 0, 47, 117,
                                          game_width * playerX, game_height * 0.7, 100, 234)
             if select == 0:
                 arrow.draw(game_width * 0.66, game_height * 0.605, 12, 20)
@@ -107,7 +109,7 @@ def draw():
                 font.draw(game_width * 0.66, game_height * 0.605, '화산')
 
         elif player.gender == 'female':
-            walkingPlayer.clip_draw(189 + 52 * frame, 0, 53, 117,
+            walkingPlayer.clip_draw(189 + 52 * int(frame), 0, 53, 117,
                                          game_width * playerX, game_height * 0.7, 100, 234)
             if select == 0:
                 arrow.draw(game_width * 0.66, game_height * 0.605, 12, 20)
@@ -129,7 +131,7 @@ def draw():
             textbox.draw(textboxLoc[0], textboxLoc[1], game_width * 0.95, game_height * 0.18)
             font.draw(textboxLoc[0] - game_width * 0.4, textboxLoc[0], script[scriptIdx])
             playerFrame += 1
-            delay(0.6)
+            delay(0.4)
             update_canvas()
         phase += 1
 
