@@ -112,10 +112,10 @@ def draw():
             if select == 0:
                 arrow.draw(game_width * 0.66, game_height * 0.605, 12, 20)
                 font.draw(game_width * 0.68, game_height * 0.605, '새싹')
-                font.draw(game_width * 0.66, game_height * 0.55, '아리')
+                font.draw(game_width * 0.66, game_height * 0.55, '윤진')
             elif select == 1:
                 arrow.draw(game_width * 0.66, game_height * 0.55, 12, 20)
-                font.draw(game_width * 0.68, game_height * 0.55, '아리')
+                font.draw(game_width * 0.68, game_height * 0.55, '윤진')
                 font.draw(game_width * 0.66, game_height * 0.605, '새싹')
 
     elif phase == 7:
@@ -196,7 +196,7 @@ def phase5Event(_event):
                 if select == 0:
                     player.name = '새싹'
                 elif select == 1:
-                    player.name = '아리'
+                    player.name = '윤진'
             phase += 1
             nextScript()
 
