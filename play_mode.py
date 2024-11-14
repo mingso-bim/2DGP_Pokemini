@@ -13,6 +13,8 @@ def init():
     map = Map()
     gameWorld.addObject(map, 0)
 
+    gameWorld.add_collision_pair('player:obstacle', p, map.obstacles[0])
+
     debugMode()
 
 def debugMode():
@@ -23,6 +25,7 @@ def finish():
 
 def update():
     gameWorld.update()
+    gameWorld.handle_collisions()
 
 def draw():
     clear_canvas()
