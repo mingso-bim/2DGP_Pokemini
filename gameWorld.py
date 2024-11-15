@@ -28,6 +28,7 @@ def handle_collisions():
                 if collide(a, b):
                     a.handle_collision(group, b)
                     b.handle_collision(group, a)
+                    print(f'   collide {group}')
 
 def addObject(o, depth):
     world[depth].append(o)

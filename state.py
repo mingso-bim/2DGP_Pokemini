@@ -63,6 +63,8 @@ class Run:
 
     @staticmethod
     def do(player):
+        player.prevX = player.x
+        player.prevY = player.y
         if player.dir == 0:
             if player.y < 380:
                 return
