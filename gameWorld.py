@@ -1,3 +1,5 @@
+from pico2d import open_canvas
+
 import player
 game_width = 600
 game_height = 700

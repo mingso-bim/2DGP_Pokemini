@@ -1,7 +1,6 @@
 from pico2d import *
 import game_framework
 from map import Obstacle
-from player import Player
 import map
 import gameWorld
 

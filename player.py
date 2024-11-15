@@ -32,7 +32,8 @@ class Player:
 
             }
         )
-
+    def addPokemon(self, name):
+        pass
 
     def setGender(self, _gender):
         self.gender = _gender
