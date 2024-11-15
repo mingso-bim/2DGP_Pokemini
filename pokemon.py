@@ -23,9 +23,9 @@ CHIMCHAR = Pokemon("불꽃숭이", AllAttackSkills.QUICK_ATTACK, AllAttackSkills
 CHARMANDER = Pokemon("파이리", AllAttackSkills.TACKLE, AllAttackSkills.INCINERATE)
 
 PIKACHU = Pokemon("피카츄", AllAttackSkills.QUICK_ATTACK, AllAttackSkills.THUNDERBOLT)
-EMOLGA = Pokemon("에몽가", AllAttackSkills.TACKLE, AllAttackSkills.ELECTROBALL)
+PACHIRISU = Pokemon("파치리스", AllAttackSkills.TACKLE, AllAttackSkills.ELECTROBALL)
 
-pokemons = (TURTWIG, BULBASAUR, PIPLUP, PSYDUCK, CHIMCHAR, CHARMANDER, PIKACHU, EMOLGA)
+pokemons = (TURTWIG, BULBASAUR, PIPLUP, PSYDUCK, CHIMCHAR, CHARMANDER, PIKACHU, PACHIRISU)
 
 
 

@@ -1,7 +1,7 @@
 from pico2d import *
 import game_framework
 from gameWorld import game_width, game_height, p
-import play_mode
+import startPokemonEvent_mode
 
 TIME_PER_ACTION = 0.9
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -47,7 +47,7 @@ def update():
     global frame, phase
     frame = (frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
     if phase == 10:
-        game_framework.change_mode(play_mode)
+        game_framework.change_mode(startPokemonEvent_mode)
 
 def draw():
     global phase, frame, select, script, scriptIdx, player, playerX, textboxLoc, playerFrame

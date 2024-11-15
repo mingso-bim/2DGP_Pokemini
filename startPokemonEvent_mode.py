@@ -4,6 +4,7 @@ import gameWorld
 import game_framework
 from gameWorld import game_width, game_height
 import play_mode
+import pokemon
 
 
 class Pokeball:
@@ -23,14 +24,14 @@ class Pokeball:
 
 def renderPokeballs():
     global pokeballs
-    scale = 7
+    scale = 6
     x = game_width * 0.25
     y = game_height * 0.75
 
     for i in range(0, 3):
         if i % 2 == 0:
             pokeballs[i].pokeball.clip_draw(147, 0, 16, 23, x, y, 16 * (scale - 1), 23 * (scale - 1))
-            pokeballs[i].draw(x, y)
+            pokeballs[i].draw(x, y + 15)
         else:
             pokeballs[i].pokeball.clip_draw(147, 0, 16, 23, x, y - 30, 16 * scale, 23 * scale)
             pokeballs[i].draw(x, y - 30)
@@ -71,7 +72,9 @@ def handle_events():
         elif (SDL_KEYDOWN, SDLK_RIGHT) == (e.type, e.key):
             pokeballs[0], pokeballs[1], pokeballs[2] = pokeballs[2], pokeballs[0], pokeballs[1]
         elif (SDL_KEYDOWN, SDLK_SPACE) == (e.type, e.key):
-            gameWorld.p.addPokemon(pokeballs[2].name)
+            for p in pokemon.pokemons:
+                if p.name == pokeballs[1].name:
+                    gameWorld.p.addPokemon(p)
             game_framework.change_mode(play_mode)
 
 
