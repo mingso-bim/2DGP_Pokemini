@@ -1,7 +1,7 @@
 from pico2d import *
 import game_framework
 from gameWorld import game_width, game_height, p
-import startPokemonEvent_mode
+import startPokemonEvent_mode, play_mode
 
 TIME_PER_ACTION = 0.9
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -34,10 +34,10 @@ def init():
                         '포켓몬스터', "줄여서 '포켓몬'이라 불리는", '신기한 생명체가', '도처에 살고 있다!',
                         '우리 인간은 포켓몬과', '사이좋게 지내고 있단다', '이제 자네에 대해서', '알아보도록 하지',
                         '자네는 남자인가?', '아니면 여자인가?', '그렇군!', '자네의 이름은?', '흐음...',
-                        '(이)라고 하는가!', '좋은 이름이구나!', '여기 있는 이 소년은', '자네의 친구였지?',
+                        '(이)라고 하는가!', '좋은 이름이구나!', '자네의 동료를 골라보게!', '좋은 동료를 골랐군!', '여기 있는 이 소년은', '자네의 친구였지?',
                         '이름이 바람이로군!', '!!', '이제부터 너만의', '이야기가 시작된다!', '너는 여러 포켓몬이나',
-                        '많은 사람들을 만나', '무언가를 발견하게 되겠지!!', '그럼', '동료를 골라보게!')
-
+                        '많은 사람들을 만나', '무언가를 발견하게 되겠지!!', '그럼', '포켓몬스터의 세계로!')
+# 23에 포켓몬 고르기 이벤트
 
 def finish():
     global font, background, profMa, walkingPlayer, textbox, miniTextbox, arrow, smallPlayer
@@ -47,7 +47,7 @@ def update():
     global frame, phase
     frame = (frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
     if phase == 10:
-        game_framework.change_mode(startPokemonEvent_mode)
+        game_framework.change_mode(play_mode)
 
 def draw():
     global phase, frame, select, script, scriptIdx, player, playerX, textboxLoc, playerFrame
@@ -146,12 +146,14 @@ def draw():
 
 def checkScriptIdx():
     global scriptIdx, phase
-    if scriptIdx in [1, 9, 17, 19, 23, 26, 33]:
+    if scriptIdx in [1, 9, 17, 19, 25, 28, 35]:
         phase += 1
+    if scriptIdx == 24:
+        game_framework.push_mode(startPokemonEvent_mode)
 
 def nextScript():
     global scriptIdx, select
-    if scriptIdx == 33:
+    if scriptIdx == 35:
         return
     scriptIdx += 1
     select = 0

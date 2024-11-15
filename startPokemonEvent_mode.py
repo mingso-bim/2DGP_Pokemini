@@ -75,7 +75,7 @@ def handle_events():
             for p in pokemon.pokemons:
                 if p.name == pokeballs[1].name:
                     gameWorld.p.addPokemon(p)
-            game_framework.change_mode(play_mode)
+            game_framework.pop_mode()
 
 
 def pause(): pass
