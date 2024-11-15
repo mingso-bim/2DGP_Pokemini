@@ -14,7 +14,7 @@ class Player:
         self.image = None
         self.width, self.height = 0, 0
         self.frame = 1
-        self.x, self.y = 300, 500
+        self.x, self.y = 280, 500
         self.prevX, self.prevY = 0, 0
         self.dir = 1
         self.speed = RUN_SPEED_PPS
@@ -70,5 +70,7 @@ class Player:
         if group == 'player:obstacle':
             self.x = self.prevX
             self.y = self.prevY
+        elif group == 'player:portal':
+            pass
 
 p = Player()

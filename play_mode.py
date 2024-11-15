@@ -8,11 +8,12 @@ import gameWorld
 def init():
     global p
 
+    map.initMap()
     p = gameWorld.p
     gameWorld.addObject(p, 1)
-    map.initMap()
 
     gameWorld.add_collision_pair('player:obstacle', p, None)
+    gameWorld.add_collision_pair('player:portal', p, None)
 
     debugMode()
 
@@ -52,6 +53,9 @@ def handle_events():
                 startY = gameWorld.game_height - e.y
             if e.button == SDL_BUTTON_RIGHT:
                 for o in map.map_house.obstacles:
+                    if 20 > (o.right - o.left) * (o.top - o.bottom):
+                        map.map_house.obstacles.remove(o)
+                        gameWorld.remove_collision_object(o)
                     if o.left < e.x < o.right:
                         if o.bottom < gameWorld.game_height - e.y < o.top:
                             map.map_house.obstacles.remove(o)
