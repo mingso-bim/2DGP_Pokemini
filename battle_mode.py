@@ -2,6 +2,7 @@ from pico2d import *
 import gameWorld
 import game_framework
 from gameWorld import game_width, game_height
+import skill
 
 
 class Battle:
@@ -9,7 +10,7 @@ class Battle:
     UI = None
     background = None
     font = None
-
+    textbox = None
 
     def __init__(self):
         if Battle.touchpad == None:
@@ -19,8 +20,13 @@ class Battle:
         if Battle.background == None:
             Battle.background = load_image('resource/battleBackground.png')
         if Battle.font == None:
-            Battle.font = load_font('resource/font.ttf', 55)
+            Battle.font = load_font('resource/font.ttf', 40)
+        if Battle.textbox == None:
+            Battle.textbox = load_image('resource/textbox.png')
+
         self.select = 0
+        self.selectMode = 'main'
+
         self.player = gameWorld.p
         self.trainer = None
         self.player_cur_pokemon = self.player.pokemons[0]
@@ -28,20 +34,139 @@ class Battle:
 
 
     def render(self):
-        Battle.touchpad.clip_draw(0, 783 - 202, 255, 202, game_width/2, game_height * 0.27, game_width, game_height * 0.55)
+        pp = 0
+        if self.selectMode == 'main':
+            Battle.touchpad.clip_draw(0, 783 - 202, 255, 202, game_width/2, game_height * 0.27, game_width, game_height * 0.55)
+            if self.select == 0:
+                Battle.touchpad.clip_draw(295, 783 - 131, 216, 90,
+                                          game_width * 0.502, game_height * 0.325, game_width * 0.88, game_height * 0.26)
+            elif self.select == 1:
+                Battle.touchpad.clip_draw(295, 783 - 246, 78, 44,
+                                          game_width * 0.157, game_height * 0.085, 78 * 2, 44 * 2)
+            elif self.select == 2:
+                Battle.touchpad.clip_draw(295, 783 - 246, 78, 44,
+                                          game_width * 0.502, game_height * 0.07, 78 * 2, 44 * 2)
+            elif self.select == 3:
+                Battle.touchpad.clip_draw(295, 783 - 246, 78, 44,
+                                          game_width * 0.845, game_height * 0.085, 78 * 2, 44 * 2)
+
+        elif self.selectMode == 'skill':
+            Battle.touchpad.clip_draw(0, 783 - 406, 255, 202, game_width / 2, game_height * 0.27, game_width, game_height * 0.55)
+            # 한 칸당 124, 55
+            # 0번째 칸
+            Battle.touchpad.clip_draw(0, 317 - (self.player_cur_pokemon.skill[0].type.value - 2) * 55, 124, 55,
+                                      game_width * 0.25, game_height * 0.41, 248 * 1.2, 110)
+            Battle.font.draw(game_width * 0.06, game_height * 0.43, self.player_cur_pokemon.skill[0].name)
+            if self.player_cur_pokemon.skill[0].pp < self.player_cur_pokemon.cur_pp:
+                pp = self.player_cur_pokemon.skill[0].pp
+            else:
+                pp = self.player_cur_pokemon.cur_pp
+            Battle.font.draw(game_width * 0.29, game_height * 0.383, str(pp))
+            Battle.font.draw(game_width * 0.38, game_height * 0.383, str(self.player_cur_pokemon.skill[0].pp))
+
+            #1번째 칸
+            Battle.touchpad.clip_draw(0, 317 - (self.player_cur_pokemon.skill[1].type.value - 2) * 55, 124, 55,
+                                      game_width * 0.75, game_height * 0.41, 248 * 1.2, 110)
+            Battle.font.draw(game_width * 0.56, game_height * 0.43, self.player_cur_pokemon.skill[1].name)
+            if self.player_cur_pokemon.skill[1].pp < self.player_cur_pokemon.cur_pp:
+                pp = self.player_cur_pokemon.skill[1].pp
+            else:
+                pp = self.player_cur_pokemon.cur_pp
+            Battle.font.draw(game_width * 0.79, game_height * 0.383, str(pp))
+            Battle.font.draw(game_width * 0.88, game_height * 0.383, str(self.player_cur_pokemon.skill[1].pp))
+
+            # 2번째 칸
+            if len(self.player_cur_pokemon.skill) > 2:
+                Battle.touchpad.clip_draw(0, 317 - (self.player_cur_pokemon.skill[2].type.value - 2) * 55, 124, 55,
+                                          game_width * 0.25, game_height * 0.23, 248 * 1.2, 110)
+                Battle.font.draw(game_width * 0.06, game_height * 0.25, self.player_cur_pokemon.skill[2].name)
+                if self.player_cur_pokemon.skill[2].pp < self.player_cur_pokemon.cur_pp:
+                    pp = self.player_cur_pokemon.skill[2].pp
+                else:
+                    pp = self.player_cur_pokemon.cur_pp
+                Battle.font.draw(game_width * 0.29, game_height * 0.205, str(pp))
+                Battle.font.draw(game_width * 0.38, game_height * 0.205, str(self.player_cur_pokemon.skill[2].pp))
+
+            if len(self.player_cur_pokemon.skill) > 3:
+                Battle.touchpad.clip_draw(0, 317 - (self.player_cur_pokemon.skill[3].type.value - 2) * 55, 124, 55,
+                                          game_width * 0.75, game_height * 0.23, 248 * 1.2, 110)
+                Battle.font.draw(game_width * 0.56, game_height * 0.25, self.player_cur_pokemon.skill[3].name)
+                if self.player_cur_pokemon.skill[3].pp < self.player_cur_pokemon.cur_pp:
+                    pp = self.player_cur_pokemon.skill[3].pp
+                else:
+                    pp = self.player_cur_pokemon.cur_pp
+                Battle.font.draw(game_width * 0.79, game_height * 0.205, str(pp))
+                Battle.font.draw(game_width * 0.88, game_height * 0.205, str(self.player_cur_pokemon.skill[3].pp))
+            
+            # select 그리기
+            if self.select == 0:
+                Battle.touchpad.clip_draw(295, 783 - 194, 124, 55, game_width * 0.25, game_height * 0.41, 248 * 1.2, 110)
+            elif self.select == 1:
+                Battle.touchpad.clip_draw(295, 783 - 194, 124, 55, game_width * 0.75, game_height * 0.41, 248 * 1.2, 110)
+            elif self.select == 2:
+                Battle.touchpad.clip_draw(295, 783 - 194, 124, 55, game_width * 0.25, game_height * 0.23, 248 * 1.2, 110)
+            elif self.select == 3:
+                Battle.touchpad.clip_draw(295, 783 - 194, 124, 55, game_width * 0.75, game_height * 0.23, 248 * 1.2, 110)
+            elif self.select == 4:
+                Battle.touchpad.clip_draw(295, 783 - 300, 236, 45, game_width * 0.5, game_height * 0.06, 472 * 1.2, 90)
+
+        # 화면 상단 출력
         Battle.background.clip_draw(0, 0, 255, 144, game_width/2, game_height * 0.75, game_width, game_height * 0.5)
-        Battle.background.clip_draw(257, 0, 259, 144, game_width * 0.46, game_height * 0.77, 259 * 2.5, 144 * 2.5)
+        Battle.background.clip_draw(257, 0, 259, 144, game_width * 0.46, game_height * 0.89, 259 * 2.5, 144 * 2.5)
+        Battle.textbox.clip_draw(0, 0, 250, 44, game_width * 0.5, game_height * 0.56, 500 * 1.2, 88)
 
         # 상대 포켓몬 UI
-        Battle.UI.clip_draw(0, 80, 120, 29, game_width * 0.199, game_height * 0.89, 119*2, 58)
-
+        Battle.UI.clip_draw(0, 80, 120, 29, game_width * 0.199, game_height * 0.92, 119*2, 58)
 
         # 내 포켓몬 UI
-        Battle.UI.clip_draw(0, 109-69, 120, 38, game_width * 0.81, game_height * 0.63, 119*2, 38 * 2)
+        Battle.UI.clip_draw(0, 109-72, 120, 41, game_width * 0.81, game_height * 0.70, 119*2, 41 * 2)
+        percentage = int(self.player_cur_pokemon.exp / self.player_cur_pokemon.max_exp * 100)
+        Battle.UI.clip_draw(0, 11, 89, 3, game_width * 0.853, game_height * 0.645, 178, 6)
 
 
     def update(self):
         pass
+
+    def handleSelect(self, e):
+        if self.selectMode == 'main':
+            if e.key == SDLK_RIGHT:
+                if self.select == 3:
+                    return
+                self.select += 1
+            elif e.key == SDLK_LEFT:
+                if self.select == 0:
+                    return
+                self.select -= 1
+            elif e.key == SDLK_DOWN and self.select == 0:
+                self.select += 1
+            elif e.key == SDLK_UP and self.select > 0:
+                self.select = 0
+            elif e.key == SDLK_SPACE:
+                if self.select == 0:
+                    self.selectMode = 'skill'
+
+        elif self.selectMode == 'skill':
+            if e.key == SDLK_RIGHT:
+                if self.select < 4:
+                    self.select += 1
+            elif e.key == SDLK_LEFT:
+                if self.select > 0:
+                    self.select -= 1
+            elif e.key == SDLK_DOWN:
+                if self.select < 3:
+                    self.select += 2
+                elif self.select == 3:
+                    self.select += 1
+            elif e.key == SDLK_UP:
+                if self.select > 1:
+                    self.select -= 2
+            elif e.key == SDLK_SPACE:
+                if self.select == 4:
+                    self.selectMode = 'main'
+                    self.select = 0
+
+
+
 
 
 def init():
@@ -69,6 +194,8 @@ def handle_events():
             print('end battle mode')
         elif (SDL_KEYDOWN, SDLK_ESCAPE) == (e.type, e.key):
             game_framework.quit()
+        elif e.type == SDL_KEYDOWN:
+            battle.handleSelect(e)
 
 def pause(): pass
 def resume(): pass

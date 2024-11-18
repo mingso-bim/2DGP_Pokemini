@@ -4,7 +4,7 @@ from map import Obstacle
 import map
 import gameWorld
 import battle_mode
-import pokemon
+import pokemon, skill
 
 def init():
     global p
@@ -21,6 +21,9 @@ def init():
 def debugMode():
     p.setGender('male')
     p.addPokemon(pokemon.pokemons[0])
+    p.pokemons[0].addSkill(skill.FIRE_FANG)
+    p.pokemons[0].addSkill(skill.THUNDER)
+    p.pokemons[0].exp = 40
 
 def finish():
     gameWorld.clear()

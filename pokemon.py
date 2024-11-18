@@ -1,5 +1,6 @@
 from enum import *
-from Skill import Status, AllAttackSkills
+from skill import Status
+import skill
 
 class Pokemon:
     def __init__(self, _name, _skill1, _skill2):
@@ -7,27 +8,30 @@ class Pokemon:
         self.status = {Status.NONE}
         self.skill = [_skill1, _skill2]
         self.level = 1
-        self.pp = 300
+        self.exp = 0
+        self.max_exp = 100
+        self.max_pp = 300
+        self.cur_pp = self.max_pp
         self.max_hp = 20
         self.cur_hp = self.max_hp
 
-    def addSkill(self):
-        pass
+    def addSkill(self, s):
+        self.skill.append(s)
 
     def UseSkill(self):
         pass
 
-TURTWIG = Pokemon("모부기", AllAttackSkills.QUICK_ATTACK, AllAttackSkills.RAZOR_LEAF)
-BULBASAUR = Pokemon("이상해씨", AllAttackSkills.CUTTING_GRASS, AllAttackSkills.BRANCH_POKE)
+TURTWIG = Pokemon("모부기", skill.QUICK_ATTACK, skill.RAZOR_LEAF)
+BULBASAUR = Pokemon("이상해씨", skill.CUTTING_GRASS, skill.BRANCH_POKE)
 
-PIPLUP = Pokemon("팽도리", AllAttackSkills.TACKLE, AllAttackSkills.WATER_CANNONS)
-PSYDUCK = Pokemon("고라파덕", AllAttackSkills.TACKLE, AllAttackSkills.HYDROCANNON)  
+PIPLUP = Pokemon("팽도리", skill.TACKLE, skill.WATER_CANNONS)
+PSYDUCK = Pokemon("고라파덕", skill.TACKLE, skill.HYDROCANNON)  
 
-CHIMCHAR = Pokemon("불꽃숭이", AllAttackSkills.QUICK_ATTACK, AllAttackSkills.EMBER)
-CHARMANDER = Pokemon("파이리", AllAttackSkills.TACKLE, AllAttackSkills.INCINERATE)
+CHIMCHAR = Pokemon("불꽃숭이", skill.QUICK_ATTACK, skill.EMBER)
+CHARMANDER = Pokemon("파이리", skill.TACKLE, skill.INCINERATE)
 
-PIKACHU = Pokemon("피카츄", AllAttackSkills.QUICK_ATTACK, AllAttackSkills.THUNDERBOLT)
-PACHIRISU = Pokemon("파치리스", AllAttackSkills.TACKLE, AllAttackSkills.ELECTROBALL)
+PIKACHU = Pokemon("피카츄", skill.QUICK_ATTACK, skill.THUNDERBOLT)
+PACHIRISU = Pokemon("파치리스", skill.TACKLE, skill.ELECTROBALL)
 
 pokemons = (TURTWIG, BULBASAUR, PIPLUP, PSYDUCK, CHIMCHAR, CHARMANDER, PIKACHU, PACHIRISU)
 
