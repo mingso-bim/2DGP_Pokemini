@@ -18,7 +18,7 @@ class Player:
         self.prevX, self.prevY = 0, 0
         self.dir = 1
         self.speed = RUN_SPEED_PPS
-        self.moveable = False
+        self.visible = True
         self.pokemons = []
         self.items = []
         self.stateMachine = StateMachine(self)
@@ -55,6 +55,8 @@ class Player:
 
 
     def render(self):
+        if self.visible == False:
+            return
         self.stateMachine.render()
         draw_rectangle(*self.get_bb())
 

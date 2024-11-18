@@ -3,6 +3,8 @@ import game_framework
 from map import Obstacle
 import map
 import gameWorld
+import battle_mode
+import pokemon
 
 def init():
     global p
@@ -18,6 +20,7 @@ def init():
 
 def debugMode():
     p.setGender('male')
+    p.addPokemon(pokemon.pokemons[0])
 
 def finish():
     gameWorld.clear()
@@ -44,6 +47,10 @@ def handle_events():
         elif (SDL_KEYDOWN, SDLK_F2) == (e.type, e.key):
             map.loadMap()
             print('loaded')
+        elif (SDL_KEYDOWN, SDLK_F3) == (e.type, e.key):
+            game_framework.push_mode(battle_mode)
+            print('battle mode')
+            p.visible = False
         elif e.type == SDL_KEYDOWN or e.type == SDL_KEYUP:
             p.handle_events(e)
         elif e.type == SDL_MOUSEBUTTONDOWN:

@@ -6,6 +6,10 @@ class Pokemon:
         self.name = _name
         self.status = {Status.NONE}
         self.skill = [_skill1, _skill2]
+        self.level = 1
+        self.pp = 300
+        self.max_hp = 20
+        self.cur_hp = self.max_hp
 
     def addSkill(self):
         pass

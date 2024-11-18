@@ -68,8 +68,10 @@ def handle_events():
         if (SDL_KEYDOWN, SDLK_ESCAPE) == (e.type, e.key):
             game_framework.quit()
         elif (SDL_KEYDOWN, SDLK_LEFT) == (e.type, e.key):
+            delay(0.1)
             pokeballs[0], pokeballs[1], pokeballs[2] = pokeballs[1], pokeballs[2], pokeballs[0]
         elif (SDL_KEYDOWN, SDLK_RIGHT) == (e.type, e.key):
+            delay(0.1)
             pokeballs[0], pokeballs[1], pokeballs[2] = pokeballs[2], pokeballs[0], pokeballs[1]
         elif (SDL_KEYDOWN, SDLK_SPACE) == (e.type, e.key):
             for p in pokemon.pokemons:
