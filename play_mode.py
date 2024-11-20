@@ -5,6 +5,7 @@ import map
 import gameWorld
 import battle_mode
 import pokemon, skill
+import trainer
 
 def init():
     global p
@@ -15,17 +16,21 @@ def init():
 
     gameWorld.add_collision_pair('player:obstacle', p, None)
     gameWorld.add_collision_pair('player:portal', p, None)
+    gameWorld.add_collision_pair('player:trainer', p, None)
 
     debugMode()
 
 def debugMode():
     p.setGender('male')
-    p.addPokemon(pokemon.pokemons[0])
+    p.addPokemon(pokemon.PSYDUCK)
     p.pokemons[0].addSkill(skill.FIRE_FANG)
     p.pokemons[0].addSkill(skill.THUNDER)
     p.pokemons[0].exp = 40
-    p.pokemons[0].cur_hp = 523
-    p.pokemons[0].max_hp = 678
+    t = trainer.Trainer()
+    t.x, t.y = 300, 500
+    t.pokemons.append(pokemon.PSYDUCK)
+    gameWorld.addObject(t, 1)
+    gameWorld.add_collision_pair('player:trainer', None, t)
 
 def finish():
     gameWorld.clear()

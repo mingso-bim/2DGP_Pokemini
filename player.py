@@ -1,6 +1,7 @@
 from pico2d import *
 from stateMachine import *
 from state import *
+
 PIXEL_PER_METER = (30.0 / 1.4)
 RUN_SPEED_KMPH = 20.0
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
@@ -76,5 +77,13 @@ class Player:
             self.y = self.prevY
         elif group == 'player:portal':
             pass
+        elif group == 'player:trainer':
+            self.x = self.prevX
+            self.y = self.prevY
+            if other.battle:
+                return
+            self.visible = False
+            self.stateMachine.start(Idle)
+            self.frame = 0
 
 p = Player()
