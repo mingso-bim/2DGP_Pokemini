@@ -122,6 +122,21 @@ class Battle:
         Battle.UI.clip_draw(0, 109-72, 120, 41, game_width * 0.81, game_height * 0.70, 119*2, 41 * 2)
         percentage = int(self.player_cur_pokemon.exp / self.player_cur_pokemon.max_exp * 100)
         Battle.UI.clip_draw(0, 11, 89, 3, game_width * 0.853, game_height * 0.645, 178, 6)
+        Battle.UI.clip_draw(1 + 8 * (self.player_cur_pokemon.level), 1, 8, 7, game_width * 0.932, game_height * 0.725, 16, 14)
+        hp1 = self.player_cur_pokemon.cur_hp // 100
+        if hp1 != 0:
+            Battle.UI.clip_draw(9 * hp1, 1, 8, 7, game_width * 0.83, game_height * 0.67, 16, 14)
+        hp2 = (self.player_cur_pokemon.cur_hp - 100*hp1) // 10
+        Battle.UI.clip_draw(9 * hp2, 1, 8, 7, game_width * 0.855, game_height * 0.67, 16, 14)
+        hp3 = (self.player_cur_pokemon.cur_hp - 100 * hp1 - 10 * hp2)
+        Battle.UI.clip_draw(9 * hp3, 1, 8, 7, game_width * 0.88, game_height * 0.67, 16, 14)
+        hp1 = self.player_cur_pokemon.max_hp // 100
+        if hp1 != 0:
+            Battle.UI.clip_draw(9 * hp1, 1, 8, 7, game_width * 0.94, game_height * 0.67, 16, 14)
+        hp2 = (self.player_cur_pokemon.max_hp - hp1 * 100) // 10
+        Battle.UI.clip_draw(9 * hp2, 1, 8, 7, game_width * 0.965, game_height * 0.67, 16, 14)
+        hp3 = (self.player_cur_pokemon.max_hp - hp1 * 100 - hp2 * 10)
+        Battle.UI.clip_draw(9 * hp3, 1, 8, 7, game_width * 0.99, game_height * 0.67, 16, 14)
 
 
     def update(self):

@@ -24,6 +24,8 @@ def debugMode():
     p.pokemons[0].addSkill(skill.FIRE_FANG)
     p.pokemons[0].addSkill(skill.THUNDER)
     p.pokemons[0].exp = 40
+    p.pokemons[0].cur_hp = 523
+    p.pokemons[0].max_hp = 678
 
 def finish():
     gameWorld.clear()

@@ -16,7 +16,7 @@ class Player:
         self.frame = 1
         self.x, self.y = 280, 500
         self.prevX, self.prevY = 0, 0
-        self.dir = 1
+        self.dirX, self.dirY, self.dir = 1, 1, 0
         self.speed = RUN_SPEED_PPS
         self.visible = True
         self.pokemons = []
@@ -25,11 +25,12 @@ class Player:
         self.stateMachine.start(Idle)
         self.stateMachine.setTransitions(
             {
-                Idle: { rightDown: Run, rightUp: Run, leftDown: Run, leftUp: Run,
-                        upDown: Run, upUp: Run, downDown: Run, downUp: Run },
-                Run: { rightDown: Idle, rightUp: Idle, leftDown: Idle, leftUp: Idle,
+                Idle: { rightDown: RunX, rightUp: RunX, leftDown: RunX, leftUp: RunX,
+                        upDown: RunY, upUp: RunY, downDown: RunY, downUp: RunY },
+                RunX: { rightDown: Idle, rightUp: Idle, leftDown: Idle, leftUp: Idle,
+                        upDown: RunX, upUp: RunX, downDown: RunX, downUp: RunX },
+                RunY: { rightDown: RunY, rightUp: RunY, leftDown: RunY, leftUp: RunY,
                         upDown: Idle, upUp: Idle, downDown: Idle, downUp: Idle }
-
             }
         )
     def addPokemon(self, p):
