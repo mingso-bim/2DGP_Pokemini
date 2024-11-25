@@ -12,7 +12,7 @@ class Pokemon:
     def __init__(self, _name, _skill1, _skill2):
         self.name = _name
         self.frame = 0
-        self.status = {Status.NONE}
+        self.status = [Status.NONE]
         self.skill = [_skill1, _skill2]
         self.level = 1
         self.exp = 0
@@ -28,7 +28,7 @@ class Pokemon:
             return
         self.skill.append(s)
 
-    def UseSkill(self, s):
+    def useSkill(self, s):
         self.cur_pp -= self.skill[s].pp
         return self.skill[s]
 

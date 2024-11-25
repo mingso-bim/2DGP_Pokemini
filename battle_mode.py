@@ -1,8 +1,12 @@
+from random import randint
+from game_framework import change_mode
+from stateMachine import StateMachine
 from pico2d import *
 import gameWorld
 import game_framework
 from gameWorld import game_width, game_height
-import skill
+from battle_state import *
+from skill import Type, Status
 
 other = None
 
@@ -14,10 +18,11 @@ class Battle:
     textbox = None
     meet_script = ('앗! 야생의 ', '(이)가 나타났다!', '가랏! ', '!')
     attack_script = ('의 ', '!')
-    counter_script = ('효과가 굉장했다!', '효과가 별로인 것 같다...')
-    status_script = ('의 몸에 독이 퍼졌다!', '은(는) 독에 의한 데미지를 입었다!',
-                     '은(는) 화상을 입었다!', '은(는) 화상 데미지를 입었다!'
-                     '은(는) 마비되어 기술이 나오기 어려워졌다!', '은(는) 몸이 저려서 움직일 수 없다!')
+    counter_script = ('효과가 굉장했다!', '효과가 별로인 듯 하다')
+    status_script = ('상대의 몸에 독이 퍼졌다!', '은(는) 독에 의한 데미지를 입었다!',
+                     '상대는 화상을 입었다!', '은(는) 화상 데미지를 입었다!',
+                     '상대는 마비되어 기술이 나오기 어려워졌다!', '은(는) 몸이 저려서 움직일 수 없다!')
+
 
     def __init__(self):
         if Battle.touchpad == None:
@@ -38,28 +43,95 @@ class Battle:
         self.trainer = other
         self.player_cur_pokemon = self.player.pokemons[0]
         self.trainer_cur_pokemon = self.trainer.pokemons[0]
+        self.trainer_skill = 0
         self.status = 'meet'
         self.scriptIdx = 0
+        self.turn = 'player'
+        self.next_state = ''
 
-    def render_script(self):
-        if self.status == 'meet':
-            if self.scriptIdx == 0:
-                script = Battle.meet_script[0] + self.trainer_cur_pokemon.name + Battle.meet_script[1]
-                Battle.font.draw(game_width * 0.05, game_height * 0.59, script)
-            elif self.scriptIdx == 1:
-                script = Battle.meet_script[2] + self.player_cur_pokemon.name + Battle.meet_script[3]
-                Battle.font.draw(game_width * 0.05, game_height * 0.59, script)
-        elif self.status == 'player':
-            if self.scriptIdx == 0:
-                script = self.player_cur_pokemon.name + '(은)는 무엇을 할까?'
-                Battle.font.draw(game_width * 0.05, game_height * 0.59, script)
-        elif self.status == 'other':
-            pass
-        elif self.status == 'run':
-            script = self.player_cur_pokemon.name + '(은)는 도망쳤다!'
-            Battle.font.draw(game_width * 0.05, game_height * 0.59, script)
+        self.cur_script = []
+        self.make_script('meet')
+
+    def make_script(self, status):
+        self.cur_script.clear()
+        self.scriptIdx = 0
+        if status == 'meet':
+            self.cur_script.append(Battle.meet_script[0] + self.trainer_cur_pokemon.name + Battle.meet_script[1])
+            self.cur_script.append(Battle.meet_script[2] + self.player_cur_pokemon.name + Battle.meet_script[3])
+
+        elif status == 'player':
+            if self.player_cur_pokemon.status == 'POISON':
+                self.cur_script.append(self.player_cur_pokemon.name + Battle.status_script[1])
+            if self.player_cur_pokemon.status == 'BURN':
+                self.cur_script.append(self.player_cur_pokemon.name + Battle.status_script[3])
+            if self.player_cur_pokemon.status == 'PARALYSIS':
+                self.cur_script.append(self.player_cur_pokemon.name + Battle.status_script[5])
+                return
+            self.cur_script.append(self.player_cur_pokemon.name + '(은)는 무엇을 할까?')
+
+        elif status == 'player_attack':
+            self.cur_script.append(self.player_cur_pokemon.name + '의 ' + self.player_cur_skill.name + '!')
+
+        elif status == 'status_poison':
+            self.cur_script.append(Battle.status_script[2])
+
+        elif status == 'status_burn':
+            self.cur_script.append(Battle.status_script[4])
+
+        elif status == 'status_paralysis':
+            self.cur_script.append(Battle.status_script[6])
+
+        elif status == 'other':
+            if self.trainer_cur_pokemon.status == 'POISON':
+                self.cur_script.append(self.trainer_cur_pokemon + Battle.status_script[1])
+            if self.trainer_cur_pokemon.status == 'BURN':
+                self.cur_script.append(self.trainer_cur_pokemon + Battle.status_script[3])
+            if self.trainer_cur_pokemon.status == 'PARALYSIS':
+                self.cur_script.append(self.trainer_cur_pokemon + Battle.status_script[5])
+                return
+            self.cur_script.append(self.trainer_cur_pokemon.name + Battle.attack_script[0] +
+                      self.trainer_cur_pokemon.skill[self.trainer_skill].name + Battle.attack_script[1])
+
+        elif status == 'run':
+            self.cur_script.append(self.player_cur_pokemon.name + '(은)는 도망쳤다!')
+
+        else:
+            print('invalid')
+
+    def handle_status(self):
+        if self.scriptIdx == len(self.cur_script):
+            if self.status == 'meet':
+                self.change_status('player')
+
+            elif self.status == 'run':
+                game_framework.pop_mode()
+
+            elif self.status in ('moving', 'status_poison', 'status_burn', 'status_paralysis'):
+                if self.turn == 'player':
+                    self.change_status('other')
+                    self.turn = 'other'
+                elif self.turn == 'other':
+                    self.change_status('player')
+                    self.turn = 'player'
+
+            elif self.status == 'player_attack':
+                self.change_status(self.next_state)
+                if self.next_state == 'other':
+                    self.turn = 'other'
+                    self.other_attack()
+
+    def other_attack(self):
+        self.trainer_skill = randint(0, 3)
+        val = attack(self.trainer_cur_pokemon, self.player_cur_pokemon,
+                     self.trainer_cur_pokemon.skill[self.trainer_skill])
+
+    def change_status(self, status):
+        self.make_script(status)
+        self.status = status
+
 
     def render(self):
+        print(self.status)
         pp = 0
         if self.selectMode == 'main':
             Battle.touchpad.clip_draw(0, 783 - 202, 255, 202, game_width/2, game_height * 0.27, game_width, game_height * 0.55)
@@ -124,7 +196,7 @@ class Battle:
                     pp = self.player_cur_pokemon.cur_pp
                 Battle.font.draw(game_width * 0.79, game_height * 0.205, str(pp))
                 Battle.font.draw(game_width * 0.88, game_height * 0.205, str(self.player_cur_pokemon.skill[3].pp))
-            
+
             # select 그리기
             if self.select == 0:
                 Battle.touchpad.clip_draw(295, 783 - 194, 124, 55, game_width * 0.25, game_height * 0.41, 248 * 1.2, 110)
@@ -176,24 +248,37 @@ class Battle:
         Battle.font.draw(game_width * 0.67, game_height * 0.725, self.player_cur_pokemon.name)
 
         Battle.textbox.clip_draw(0, 0, 250, 44, game_width * 0.5, game_height * 0.56, 500 * 1.2, 88)
-        self.render_script()
+        if self.status == 'run':
+            Battle.font.draw(game_width * 0.05, game_height * 0.59, self.player_cur_pokemon.name + '(은)는 도망쳤다!')
+        elif self.status == 'moving':
+            Battle.font.draw(game_width * 0.05, game_height * 0.59, '그러나 상대는 맞지 않았다!')
+        else:
+            Battle.font.draw(game_width * 0.05, game_height * 0.59, self.cur_script[self.scriptIdx])
 
 
     def update(self):
         self.trainer_cur_pokemon.update()
-        if self.status == 'meet' and self.scriptIdx == 2:
-            self.scriptIdx = 0
-            self.status = 'player'
-
 
     def handleSelect(self, e):
         if self.status == 'meet':
             if e.key == SDLK_SPACE:
                 self.scriptIdx += 1
+                self.handle_status()
+                print(self.scriptIdx, len(self.cur_script), self.cur_script)
+
         elif self.status == 'run':
-            game_framework.pop_mode()
+            if e.key == SDLK_SPACE:
+                self.handle_status()
+                self.scriptIdx += 1
+
+        elif self.status == 'player_attack':
+            self.scriptIdx += 1
+            self.handle_status()
 
         elif self.selectMode == 'main':
+            if self.player_cur_pokemon.status == 'PARALYSIS':
+                self.scriptIdx += 1
+                return
             if e.key == SDLK_RIGHT:
                 if self.select == 3:
                     return
@@ -210,7 +295,8 @@ class Battle:
                 if self.select == 0:
                     self.selectMode = 'skill'
                 elif self.select == 2:
-                    self.status = 'run'
+                    self.change_status('run')
+
 
         elif self.selectMode == 'skill':
             if e.key == SDLK_RIGHT:
@@ -230,14 +316,42 @@ class Battle:
             elif e.key == SDLK_SPACE:
                 if self.select < 4:
                     if len(self.player_cur_pokemon.skill) >= self.select:
-                        s = self.player_cur_pokemon.useSkill(self.select - 1)
-                        attack(self.player_cur_pokemon, self.trainer_cur_pokemon, s)
+                        s = self.player_cur_pokemon.useSkill(self.select)
+                        val = attack(self.player_cur_pokemon, self.trainer_cur_pokemon, s)
+                        print(val)
+                        if val != None:
+                            self.next_state = val
+                            self.player_cur_skill = s
+                            self.change_status('player_attack')
+
                 if self.select == 4:
                     self.selectMode = 'main'
                     self.select = 0
 
 def attack(caster, subject, skill):
-    
+    if skill.pp > caster.cur_pp:
+        return None
+
+    r = randint(0, 100)
+    if skill.hitRate < r:
+        return 'moving'
+
+    subject.cur_hp -= int(skill.attack * 0.2)
+
+    r = randint(0, 100)
+    if (r < 30):
+        if skill.type == Type.POISON:
+            subject.status = Status.POISON
+            return 'status_poison'
+        elif skill.type == Type.FIRE:
+            subject.status = Status.BURN
+            return 'status_burn'
+        elif skill.type == Type.ELECTR:
+            subject.status = Status.PARALYSIS
+            return 'status_paralysis'
+
+    return 'other'
+
 
 def init():
     global battle

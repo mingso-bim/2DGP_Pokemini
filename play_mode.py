@@ -28,7 +28,7 @@ def debugMode():
     p.pokemons[0].exp = 40
     t = trainer.Trainer()
     t.x, t.y = 300, 500
-    t.pokemons.append(pokemon.PSYDUCK)
+    t.pokemons.append(pokemon.PACHIRISU)
     gameWorld.addObject(t, 1)
     gameWorld.add_collision_pair('player:trainer', None, t)
 
