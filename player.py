@@ -26,12 +26,20 @@ class Player:
         self.stateMachine.start(Idle)
         self.stateMachine.setTransitions(
             {
-                Idle: { rightDown: RunX, rightUp: RunX, leftDown: RunX, leftUp: RunX,
-                        upDown: RunY, upUp: RunY, downDown: RunY, downUp: RunY },
-                RunX: { rightDown: Idle, rightUp: Idle, leftDown: Idle, leftUp: Idle,
-                        upDown: RunX, upUp: RunX, downDown: RunX, downUp: RunX },
-                RunY: { rightDown: RunY, rightUp: RunY, leftDown: RunY, leftUp: RunY,
-                        upDown: Idle, upUp: Idle, downDown: Idle, downUp: Idle }
+                Idle: {right_down: RunRight, left_down: RunLeft, left_up: RunRight, right_up: RunLeft,
+                       upkey_down: RunUp, downkey_down: RunDown, upkey_up: RunDown, downkey_up: RunUp},
+                RunRight: {right_up: Idle, left_down: Idle, upkey_down: RunRightUp, upkey_up: RunRightDown,
+                           downkey_down: RunRightDown, downkey_up: RunRightUp},
+                RunRightUp: {upkey_up: RunRight, right_up: RunUp, left_down: RunUp, downkey_down: RunRight},
+                RunUp: {upkey_up: Idle, left_down: RunLeftUp, downkey_down: Idle, right_down: RunRightUp,
+                        left_up: RunRightUp, right_up: RunLeftUp},
+                RunLeftUp: {right_down: RunUp, downkey_down: RunLeft, left_up: RunUp, upkey_up: RunLeft},
+                RunLeft: {left_up: Idle, upkey_down: RunLeftUp, right_down: Idle, downkey_down: RunLeftDown,
+                          upkey_up: RunLeftDown, downkey_up: RunLeftUp},
+                RunLeftDown: {left_up: RunDown, downkey_up: RunLeft, upkey_down: RunLeft, right_down: RunDown},
+                RunDown: {downkey_up: Idle, left_down: RunLeftDown, upkey_down: Idle, right_down: RunRightDown,
+                          left_up: RunRightDown, right_up: RunLeftDown},
+                RunRightDown: {right_up: RunDown, downkey_up: RunRight, left_down: RunDown, upkey_down: RunRight}
             }
         )
     def addPokemon(self, p):
