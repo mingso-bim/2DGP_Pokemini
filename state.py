@@ -128,21 +128,3 @@ class Idle:
                                player.width, player.height,
                                player.x, player.y, player.width * 2, player.height * 2)
 
-class Stop:
-    @staticmethod
-    def enter(player, e):
-        pass
-
-    @staticmethod
-    def exit(player, e):
-        pass
-
-    @staticmethod
-    def do(player):
-        pass
-
-    @staticmethod
-    def render(player):
-        player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
-                               player.width, player.height,
-                               player.x, player.y, player.width * 2, player.height * 2)
