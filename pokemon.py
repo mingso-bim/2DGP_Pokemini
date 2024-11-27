@@ -1,3 +1,5 @@
+from random import randint
+
 from pico2d import load_image
 from skill import Status
 import skill
@@ -16,11 +18,13 @@ class Pokemon:
         self.skill = [_skill1, _skill2]
         self.level = 1
         self.exp = 0
-        self.max_exp = 100
+        self.max_exp = 20
+        self.drop_exp = randint(14, 20)
         self.max_pp = 300
         self.cur_pp = self.max_pp
-        self.max_hp = 20
+        self.max_hp = 30
         self.cur_hp = self.max_hp
+        self.status_turn = 0
         self.renderXY = []
 
     def addSkill(self, s):

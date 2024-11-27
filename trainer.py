@@ -1,5 +1,5 @@
 from pico2d import draw_rectangle
-import battle_mode_old
+import battle_mode
 import game_framework
 
 

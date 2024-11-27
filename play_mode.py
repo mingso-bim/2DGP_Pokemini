@@ -3,7 +3,7 @@ import game_framework
 from map import Obstacle
 import map
 import gameWorld
-import battle_mode_old
+import battle_mode
 import pokemon, skill
 import trainer
 
