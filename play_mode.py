@@ -3,7 +3,7 @@ import game_framework
 from map import Obstacle
 import map
 import gameWorld
-import battle_mode
+import battle_mode_old
 import pokemon, skill
 import trainer
 
@@ -16,7 +16,7 @@ def init():
 
     gameWorld.add_collision_pair('player:obstacle', p, None)
     gameWorld.add_collision_pair('player:portal', p, None)
-    #(gameWorld.add_collision_pair('player:trainer', p, None)
+    gameWorld.add_collision_pair('player:trainer', p, None)
 
     debugMode()
 
