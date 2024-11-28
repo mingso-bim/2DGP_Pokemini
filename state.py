@@ -1,6 +1,7 @@
 from sdl2 import *
 import game_framework
 import math
+import gameWorld
 
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -69,9 +70,13 @@ class RunRight:
     def render(player):
         if player.image == None:
             return
+
+        sx = player.x - gameWorld.get_map().window_left
+        sy = player.y - gameWorld.get_map().window_bottom
+
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
-                               player.x, player.y, player.width * 2, player.height * 2)
+                               sx, sy, player.width * 2, player.height * 2)
 
 
 class RunRightUp:
@@ -91,9 +96,13 @@ class RunRightUp:
     def render(player):
         if player.image == None:
             return
+
+        sx = player.x - gameWorld.get_map().window_left
+        sy = player.y - gameWorld.get_map().window_bottom
+
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
-                               player.x, player.y, player.width * 2, player.height * 2)
+                               sx, sy, player.width * 2, player.height * 2)
 
 
 class RunRightDown:
@@ -113,9 +122,13 @@ class RunRightDown:
     def render(player):
         if player.image == None:
             return
+
+        sx = player.x - gameWorld.get_map().window_left
+        sy = player.y - gameWorld.get_map().window_bottom
+
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
-                               player.x, player.y, player.width * 2, player.height * 2)
+                               sx, sy, player.width * 2, player.height * 2)
 
 
 class RunLeft:
@@ -140,9 +153,13 @@ class RunLeft:
     def render(player):
         if player.image == None:
             return
+
+        sx = player.x - gameWorld.get_map().window_left
+        sy = player.y - gameWorld.get_map().window_bottom
+
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
-                               player.x, player.y, player.width * 2, player.height * 2)
+                               sx, sy, player.width * 2, player.height * 2)
 
 
 class RunLeftUp:
@@ -162,9 +179,13 @@ class RunLeftUp:
     def render(player):
         if player.image == None:
             return
+
+        sx = player.x - gameWorld.get_map().window_left
+        sy = player.y - gameWorld.get_map().window_bottom
+
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
-                               player.x, player.y, player.width * 2, player.height * 2)
+                               sx, sy, player.width * 2, player.height * 2)
 
 class RunLeftDown:
     @staticmethod
@@ -183,9 +204,13 @@ class RunLeftDown:
     def render(player):
         if player.image == None:
             return
+
+        sx = player.x - gameWorld.get_map().window_left
+        sy = player.y - gameWorld.get_map().window_bottom
+
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
-                               player.x, player.y, player.width * 2, player.height * 2)
+                               sx, sy, player.width * 2, player.height * 2)
 
 
 class RunUp:
@@ -209,9 +234,13 @@ class RunUp:
     def render(player):
         if player.image == None:
             return
+
+        sx = player.x - gameWorld.get_map().window_left
+        sy = player.y - gameWorld.get_map().window_bottom
+
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
-                               player.x, player.y, player.width * 2, player.height * 2)
+                               sx, sy, player.width * 2, player.height * 2)
 
 
 class RunDown:
@@ -235,9 +264,13 @@ class RunDown:
     def render(player):
         if player.image == None:
             return
+
+        sx = player.x - gameWorld.get_map().window_left
+        sy = player.y - gameWorld.get_map().window_bottom
+
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
-                               player.x, player.y, player.width * 2, player.height * 2)
+                               sx, sy, player.width * 2, player.height * 2)
 
 
 class Idle:
@@ -258,6 +291,9 @@ class Idle:
         if player.image == None or player.visible == False:
             return
 
+        sx = player.x - gameWorld.get_map().window_left
+        sy = player.y - gameWorld.get_map().window_bottom
+
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
-                               player.x, player.y, player.width * 2, player.height * 2)
+                               sx, sy, player.width * 2, player.height * 2)

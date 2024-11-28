@@ -68,3 +68,17 @@ def collide(a, b):
     if ab > bt: return False
 
     return True
+
+def get_player():
+    for layer in world:
+        for o in layer:
+            if o == p:
+                return o
+    return None
+
+def get_map():
+    for layer in world:
+        for o in layer:
+            if o == player.m:
+                return o
+    return None

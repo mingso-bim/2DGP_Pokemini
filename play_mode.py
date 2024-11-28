@@ -10,9 +10,9 @@ import trainer
 def init():
     global p
 
-    map.initMap()
     p = gameWorld.p
     gameWorld.addObject(p, 1)
+    map.initMap()
 
     gameWorld.add_collision_pair('player:obstacle', p, None)
     gameWorld.add_collision_pair('player:portal', p, None)
@@ -26,11 +26,6 @@ def debugMode():
     p.pokemons[0].addSkill(skill.FIRE_FANG)
     p.pokemons[0].addSkill(skill.THUNDER)
     p.pokemons[0].exp = 40
-    t = trainer.Trainer()
-    t.x, t.y = 300, 500
-    t.pokemons.append(pokemon.PACHIRISU)
-    gameWorld.addObject(t, 1)
-    gameWorld.add_collision_pair('player:trainer', None, t)
 
 def finish():
     gameWorld.clear()

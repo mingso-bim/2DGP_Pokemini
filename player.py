@@ -1,4 +1,6 @@
 from pico2d import *
+
+import map
 from stateMachine import *
 from state import *
 
@@ -95,3 +97,4 @@ class Player:
             self.frame = 0
 
 p = Player()
+m = map.curMap

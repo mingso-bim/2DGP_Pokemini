@@ -1,8 +1,9 @@
 from pico2d import *
 import gameWorld
-from gameWorld import game_width, game_height
 import pickle
 
+game_width = 600
+game_height = 700
 
 class Obstacle:
     def __init__(self, l, b, r, t):
@@ -31,23 +32,38 @@ class Portal:
 
 
 class Map:
-    def __init__(self):
-        self.image = None
+    def __init__(self, image):
+        self.image = load_image(image)
+        self.w, self.h = self.image.w, self.image.h
+        self.cw = get_canvas_width()
+        self.ch = get_canvas_height() // 2
         self.obstacles = []
         self.portal = []
 
+        self.window_left = 0
+        self.window_bottom = 0
+
     def render(self):
-        self.image.draw(game_width * 0.5, game_height * 0.75, game_width, game_height * 0.5)
+        #self.image.draw(game_width * 0.5, game_height * 0.75, game_width, game_height * 0.5)
+        self.image.clip_draw_to_origin(
+            self.window_left, self.window_bottom,
+            self.cw, self.ch,
+            0, self.ch
+        )
         for o in self.obstacles:
             draw_rectangle(*o.get_bb())
         for p in self.portal:
             draw_rectangle(*p.get_bb())
 
     def update(self):
-        pass
+        self.window_left = clamp(0, int(gameWorld.get_player().x) - self.cw // 2, self.w - self.cw - 1)
+        self.window_bottom = clamp(0, int(gameWorld.get_player().y - self.cw // 2), self.h - self.ch - 1)
 
     def handle_event(self, e):
         pass
+
+    def get_window(self):
+        return self.window_left, self.window_bottom, self.window_left + self.cw, self.window_bottom + self.ch
 
 
 class TouchPad:
@@ -68,13 +84,12 @@ def initMap():
     global map_house
     global curMap
     # 맵 - 집
-    map_house = Map()
-    map_house.image = load_image('resource/map/house.png')
+    map_house = Map('resource/map/house.png')
     gameWorld.addObject(map_house, 0)
     curMap = map_house
     # 맵 - 마을
-    map_village = Map()
-    map_village.image = load_image('resource/background.png')
+    map_village = Map('resource/map/map_village.png')
+
 
 
     for o in map_house.obstacles:
