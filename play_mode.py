@@ -5,14 +5,15 @@ import map
 import gameWorld
 import battle_mode
 import pokemon, skill
-import trainer
 
 def init():
     global p
+    global m
 
     p = gameWorld.p
     gameWorld.addObject(p, 1)
-    map.initMap()
+    m = map.Map()
+    gameWorld.insertObject(m, 0)
 
     gameWorld.add_collision_pair('player:obstacle', p, None)
     gameWorld.add_collision_pair('player:portal', p, None)

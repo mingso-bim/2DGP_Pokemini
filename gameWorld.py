@@ -35,6 +35,9 @@ def handle_collisions():
 def addObject(o, depth):
     world[depth].append(o)
 
+def insertObject(o, depth):
+    world[depth].insert(0, o)
+
 def update():
     for layer in world:
         for o in layer:
@@ -77,8 +80,4 @@ def get_player():
     return None
 
 def get_map():
-    for layer in world:
-        for o in layer:
-            if o == player.m:
-                return o
-    return None
+    return world[0][0]

@@ -40,7 +40,7 @@ class Battle:
         self.select = 0
         self.select_mode = 'main'
 
-        self.player = gameWorld.p
+        self.player = gameWorld.get_player()
         self.other = other
         self.p_pokemon = self.player.pokemons[0]
         self.o_pokemon = self.other.pokemons[0]

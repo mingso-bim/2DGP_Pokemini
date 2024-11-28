@@ -1,8 +1,7 @@
 from pico2d import *
-
-import map
 from stateMachine import *
 from state import *
+
 
 PIXEL_PER_METER = (30.0 / 1.4)
 RUN_SPEED_KMPH = 20.0
@@ -96,5 +95,4 @@ class Player:
             self.stateMachine.start(Idle)
             self.frame = 0
 
-p = Player()
-m = map.curMap
+

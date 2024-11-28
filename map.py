@@ -18,6 +18,12 @@ class Obstacle:
     def handle_collision(self, group, other):
         pass
 
+    def render(self):
+        pass
+
+    def update(self):
+        pass
+
 class Portal:
     def __init__(self, x, y, target):
         self.x = x
@@ -28,32 +34,166 @@ class Portal:
         return self.x - 30, self.y + 10, self.x + 30, self.y - 10
 
     def handle_collision(self, group, other):
-        setMap(self.target)
+        gameWorld.get_map().set_map(self.target)
+
+    def render(self):
+        pass
+
+    def update(self):
+        pass
 
 
 class Map:
-    def __init__(self, image):
-        self.image = load_image(image)
-        self.w, self.h = self.image.w, self.image.h
+    house = None
+    village = None
+    road = None
+
+    def __init__(self):
+        if Map.house == None:
+            Map.house = load_image('resource/map/house.png')
+        if Map.village == None:
+            Map.village = load_image('resource/map/map_village.png')
+        if Map.road == None:
+            Map.road = load_image('resource/map/map_road.png')
+
+        self.cur_map = None
+        self.w, self.h = Map.house.w, Map.house.h
         self.cw = get_canvas_width()
         self.ch = get_canvas_height() // 2
-        self.obstacles = []
-        self.portal = []
+
+        self.house_ob = []
+        self.house_portal = []
+        self.village_ob = []
+        self.village_portal = []
+        self.road_ob = []
+        self.road_portal = []
 
         self.window_left = 0
         self.window_bottom = 0
 
+        self.init_ob()
+        self.init_portals()
+        self.set_map('h')
+
     def render(self):
         #self.image.draw(game_width * 0.5, game_height * 0.75, game_width, game_height * 0.5)
-        self.image.clip_draw_to_origin(
+        self.cur_map.clip_draw_to_origin(
             self.window_left, self.window_bottom,
             self.cw, self.ch,
             0, self.ch
         )
-        for o in self.obstacles:
-            draw_rectangle(*o.get_bb())
-        for p in self.portal:
-            draw_rectangle(*p.get_bb())
+        if self.cur_map == Map.house:
+            for o in self.house_ob:
+                draw_rectangle(*o.get_bb())
+            for o in self.house_portal:
+                draw_rectangle(*o.get_bb())
+
+        elif self.cur_map == Map.village:
+            for o in self.village_ob:
+                draw_rectangle(*o.get_bb())
+            for o in self.village_portal:
+                draw_rectangle(*o.get_bb())
+
+        elif self.cur_map == Map.road:
+            for o in self.road_ob:
+                draw_rectangle(*o.get_bb())
+            for o in self.road_portal:
+                draw_rectangle(*o.get_bb())
+
+
+    def init_portals(self):
+        portal = Portal(300, 410, Map.village)
+        self.house_portal.append(portal)
+        gameWorld.add_collision_pair('player:portal', None, portal)
+
+    def init_ob(self):
+        with open(f'Map.house.pkl', 'rb') as file:
+            loaded_data = pickle.load(file)
+
+        for o in loaded_data:
+            self.house_ob.append(o)
+            gameWorld.add_collision_pair('player:obstacle', None, o)
+
+        with open(f'Map.village.pkl', 'rb') as file:
+            loaded_data = pickle.load(file)
+
+        for o in loaded_data:
+            self.village_ob.append(o)
+            gameWorld.add_collision_pair('player:obstacle', None, o)
+
+        with open(f'Map.road.pkl', 'rb') as file:
+            loaded_data = pickle.load(file)
+
+        for o in loaded_data:
+            self.road_ob.append(o)
+            gameWorld.add_collision_pair('player:obstacle', None, o)
+
+    def save_map(self):
+        if self.cur_map == Map.house:
+            with open(f'{self.cur_map}.pkl', 'wb') as file:
+                pickle.dump(self.house_ob, file)
+        elif self.cur_map == Map.village:
+            with open(f'{self.cur_map}.pkl', 'wb') as file:
+                pickle.dump(self.village_ob, file)
+        elif self.cur_map == Map.road:
+            with open(f'{self.cur_map}.pkl', 'wb') as file:
+                pickle.dump(self.road_ob + self.road_portal, file)
+
+    def load_map(self, target):
+        if self.cur_map == Map.house:
+            for o in self.house_ob:
+                gameWorld.removeObject(o)
+            for o in self.house_portal:
+                gameWorld.removeObject(o)
+
+        elif self.cur_map == Map.village:
+            for o in self.village_ob:
+                gameWorld.removeObject(o)
+            for o in self.village_portal:
+                gameWorld.removeObject(o)
+
+        elif self.cur_map == Map.road:
+            for o in self.road_ob:
+                gameWorld.removeObject(o)
+            for o in self.road_portal:
+                gameWorld.removeObject(o)
+
+        elif self.cur_map == None:
+            pass
+
+        self.cur_map = target
+
+        if target == Map.house:
+            for o in self.house_ob:
+                gameWorld.addObject(o, 0)
+                gameWorld.add_collision_pair('player:obstacle', None, o)
+            for o in self.house_portal:
+                gameWorld.addObject(o, 0)
+                gameWorld.add_collision_pair('player:portal', None, o)
+
+        elif target == Map.village:
+            for o in self.village_ob:
+                gameWorld.addObject(o, 0)
+                gameWorld.add_collision_pair('player:obstacle', None, o)
+            for o in self.village_portal:
+                gameWorld.addObject(o, 0)
+                gameWorld.add_collision_pair('player:portal', None, o)
+
+        elif target == Map.road:
+            for o in self.road_ob:
+                gameWorld.addObject(o, 0)
+                gameWorld.add_collision_pair('player:obstacle', None, o)
+            for o in self.road_portal:
+                gameWorld.addObject(o, 0)
+                gameWorld.add_collision_pair('player:portal', None, o)
+
+    def set_map(self, map):
+        if map == 'v':
+            self.load_map(Map.village)
+        elif map == 'h':
+            self.load_map(Map.house)
+        elif map == 'r':
+            self.load_map(Map.road)
 
     def update(self):
         self.window_left = clamp(0, int(gameWorld.get_player().x) - self.cw // 2, self.w - self.cw - 1)
@@ -79,43 +219,3 @@ class TouchPad:
     def handle_event(self, e):
         pass
 
-global map_house, curMap
-def initMap():
-    global map_house
-    global curMap
-    # 맵 - 집
-    map_house = Map('resource/map/house.png')
-    gameWorld.addObject(map_house, 0)
-    curMap = map_house
-    # 맵 - 마을
-    map_village = Map('resource/map/map_village.png')
-
-
-
-    for o in map_house.obstacles:
-        gameWorld.add_collision_pair('player:obstacle', None, o)
-
-    portal = Portal(300, 410, map_village)
-    map_house.portal.append(portal)
-    gameWorld.add_collision_pair('player:portal', None, portal)
-
-
-def saveMap():
-    global map_house
-    with open('map_house.pkl', 'wb') as file:
-        pickle.dump(map_house.obstacles, file)
-
-def loadMap():
-    # 데이터 불러오기
-    with open('map_house.pkl', 'rb') as file:
-        loaded_data = pickle.load(file)
-
-    for o in loaded_data:
-        map_house.obstacles.append(o)
-        gameWorld.add_collision_pair('player:obstacle', None, o)
-
-def setMap(m):
-    global curMap
-    gameWorld.removeObject(curMap)
-    gameWorld.addObject(m, 0)
-    curMap = m
