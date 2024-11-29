@@ -36,22 +36,27 @@ class Portal:
         self.x = x
         self.y = y
         self.target = target
+        self.move = True
 
     def get_bb(self):
         return self.x - 30, self.y - 10, self.x + 30, self.y + 10
 
     def handle_collision(self, group, other):
-        gameWorld.get_map().remove()
+        if self.move:
+            return
+        # 입장할 때 포탈 켜기
         m = None
-
         if self.target == 'house':
             m = init_house()
         elif self.target == 'village':
             m = init_village()
+            other.scrolling = True
         elif self.target == 'road':
             m = init_road()
+            other.scrolling = True
 
-        gameWorld.insertObject(m, 0)
+        gameWorld.world[0][0] = m
+        self.move = True
 
     def render(self):
         pass
@@ -111,12 +116,12 @@ class Map:
             if e.type == SDL_MOUSEBUTTONDOWN:
                 for o in self.ob:
                     if 20 > (o.right - o.left) * (o.top - o.bottom):
-                        self.ob.remove(o)
                         gameWorld.removeObject(o)
+                        self.ob.remove(o)
                     if o.left < e.x < o.right:
                         if o.bottom < gameWorld.game_height - e.y < o.top:
-                            self.ob.remove(o)
                             gameWorld.removeObject(o)
+                            self.ob.remove(o)
 
 
     def save_map(self):

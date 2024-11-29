@@ -13,7 +13,7 @@ def init():
     p = gameWorld.p
     gameWorld.addObject(p, 1)
 
-    m = map.init_house()
+    m = map.init_village()
     gameWorld.insertObject(m, 0)
 
     gameWorld.add_collision_pair('player:obstacle', p, None)
