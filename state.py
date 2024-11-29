@@ -2,6 +2,7 @@ from sdl2 import *
 import game_framework
 import math
 import gameWorld
+from pico2d import clamp
 
 
 TIME_PER_ACTION = 0.5
@@ -67,13 +68,20 @@ class RunRight:
         player.x += player.speed * game_framework.frame_time * player.dirX
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
 
+        #player.x = clamp(50.0, player.x, gameWorld.get_map().w - 50.0)
+        #player.y = clamp(50.0 + gameWorld.get_map().ch, player.y, gameWorld.get_map().h - 50.0 + gameWorld.get_map().ch)
+
     @staticmethod
     def render(player):
         if player.image == None:
             return
 
-        sx = player.x - gameWorld.get_map().window_left
-        sy = player.y - gameWorld.get_map().window_bottom
+        if player.scrolling:
+            sx = player.x - gameWorld.get_map().window_left
+            sy = player.y - gameWorld.get_map().window_bottom
+        else:
+            sx = player.x
+            sy = player.y
 
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
@@ -98,8 +106,12 @@ class RunRightUp:
         if player.image == None:
             return
 
-        sx = player.x - gameWorld.get_map().window_left
-        sy = player.y - gameWorld.get_map().window_bottom
+        if player.scrolling:
+            sx = player.x - gameWorld.get_map().window_left
+            sy = player.y - gameWorld.get_map().window_bottom
+        else:
+            sx = player.x
+            sy = player.y
 
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
@@ -124,8 +136,12 @@ class RunRightDown:
         if player.image == None:
             return
 
-        sx = player.x - gameWorld.get_map().window_left
-        sy = player.y - gameWorld.get_map().window_bottom
+        if player.scrolling:
+            sx = player.x - gameWorld.get_map().window_left
+            sy = player.y - gameWorld.get_map().window_bottom
+        else:
+            sx = player.x
+            sy = player.y
 
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
@@ -150,13 +166,20 @@ class RunLeft:
         player.x += player.speed * game_framework.frame_time * player.dirX
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
 
+        #player.x = clamp(50.0, player.x, gameWorld.get_map().w - 50.0)
+        #player.y = clamp(50.0 + gameWorld.get_map().ch, player.y, gameWorld.get_map().h - 50.0 + gameWorld.get_map().ch)
+
     @staticmethod
     def render(player):
         if player.image == None:
             return
 
-        sx = player.x - gameWorld.get_map().window_left
-        sy = player.y - gameWorld.get_map().window_bottom
+        if player.scrolling:
+            sx = player.x - gameWorld.get_map().window_left
+            sy = player.y - gameWorld.get_map().window_bottom
+        else:
+            sx = player.x
+            sy = player.y
 
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
@@ -181,8 +204,12 @@ class RunLeftUp:
         if player.image == None:
             return
 
-        sx = player.x - gameWorld.get_map().window_left
-        sy = player.y - gameWorld.get_map().window_bottom
+        if player.scrolling:
+            sx = player.x - gameWorld.get_map().window_left
+            sy = player.y - gameWorld.get_map().window_bottom
+        else:
+            sx = player.x
+            sy = player.y
 
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
@@ -206,8 +233,12 @@ class RunLeftDown:
         if player.image == None:
             return
 
-        sx = player.x - gameWorld.get_map().window_left
-        sy = player.y - gameWorld.get_map().window_bottom
+        if player.scrolling:
+            sx = player.x - gameWorld.get_map().window_left
+            sy = player.y - gameWorld.get_map().window_bottom
+        else:
+            sx = player.x
+            sy = player.y
 
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
@@ -231,13 +262,20 @@ class RunUp:
         player.y += player.speed * game_framework.frame_time * player.dirY
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
 
+        #player.x = clamp(50.0, player.x, gameWorld.get_map().w - 50.0)
+        #player.y = clamp(50.0 + gameWorld.get_map().ch, player.y, gameWorld.get_map().h - 50.0 + gameWorld.get_map().ch)
+
     @staticmethod
     def render(player):
         if player.image == None:
             return
 
-        sx = player.x - gameWorld.get_map().window_left
-        sy = player.y - gameWorld.get_map().window_bottom
+        if player.scrolling:
+            sx = player.x - gameWorld.get_map().window_left
+            sy = player.y - gameWorld.get_map().window_bottom
+        else:
+            sx = player.x
+            sy = player.y
 
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
@@ -261,13 +299,20 @@ class RunDown:
         player.y += player.speed * game_framework.frame_time * player.dirY
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
 
+        #player.x = clamp(50.0, player.x, gameWorld.get_map().w - 50.0)
+        #player.y = clamp(50.0 + gameWorld.get_map().ch, player.y, gameWorld.get_map().h - 50.0 + gameWorld.get_map().ch)
+
     @staticmethod
     def render(player):
         if player.image == None:
             return
 
-        sx = player.x - gameWorld.get_map().window_left
-        sy = player.y - gameWorld.get_map().window_bottom
+        if player.scrolling:
+            sx = player.x - gameWorld.get_map().window_left
+            sy = player.y - gameWorld.get_map().window_bottom
+        else:
+            sx = player.x
+            sy = player.y
 
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
@@ -292,8 +337,12 @@ class Idle:
         if player.image == None or player.visible == False:
             return
 
-        sx = player.x - gameWorld.get_map().window_left
-        sy = player.y - gameWorld.get_map().window_bottom
+        if player.scrolling:
+            sx = player.x - gameWorld.get_map().window_left
+            sy = player.y - gameWorld.get_map().window_bottom
+        else:
+            sx = player.x
+            sy = player.y
 
         player.image.clip_draw(player.dir * (player.width * 3) + int(player.frame) * player.width, 0,
                                player.width, player.height,
