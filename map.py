@@ -84,10 +84,22 @@ class Map:
             self.cw, self.ch,
             0, self.ch
         )
-        for o in self.ob:
-            draw_rectangle(*o.get_bb())
-        for p in self.portal:
-            draw_rectangle(*p.get_bb())
+        if self.scrolling:
+            for o in self.ob:
+                sl, sb = self.world_to_camera(o.left, o.bottom)
+                sr, st = self.world_to_camera(o.right, o.top)
+                sb += self.ch
+                st += self.ch
+                sb = clamp(self.ch, sb, self.ch * 2)
+                st = clamp(self.ch, st, self.ch * 2)
+                draw_rectangle(sl, sb, sr, st)
+            for p in self.portal:
+                draw_rectangle(*p.get_bb())
+        else:
+            for o in self.ob:
+                draw_rectangle(*o.get_bb())
+            for p in self.portal:
+                draw_rectangle(*p.get_bb())
 
     def update(self):
         self.window_left = clamp(0, int(gameWorld.get_player().x - self.cw // 2), self.w - self.cw - 1)
@@ -96,22 +108,38 @@ class Map:
     def handle_event(self, e):
         if e.button == SDL_BUTTON_LEFT:
             if e.type == SDL_MOUSEBUTTONDOWN:
-                self.sx = e.x
-                self.sy = game_height - e.y
-                print(self.sx, self.sy)
+                if self.scrolling:
+                    self.sx, self.sy = self.camera_to_world(e.x, self.ch * 2 - e.y - self.ch)
+                else:
+                    self.sx = e.x
+                    self.sy = game_height - e.y
 
             elif e.type == SDL_MOUSEBUTTONUP:
-                if self.sx > e.x:
-                    sx, e.x = e.x, self.sx
-                if self.sy > game_height - e.y:
-                    sy, e.y = game_height - e.y, self.sy
-                else:
-                    e.y = game_height - e.y
+                if self.scrolling:
+                    cx, cy = self.camera_to_world(e.x, self.ch * 2 - e.y - self.ch)
+                    if self.sx > cx:
+                        self.sx, cx = cx, self.sx
+                    if self.sy > cy:
+                        self.sy , cy = cy, self.sy
 
-                o = Obstacle(self.sx, self.sy, e.x, e.y)
-                self.ob.append(o)
-                gameWorld.add_collision_pair('player:obstacle', None, o)
-                print(e.x, e.y)
+                    o = Obstacle(self.sx, self.sy, cx, cy)
+                    self.ob.append(o)
+                    gameWorld.addObject(o, 0)
+                    gameWorld.add_collision_pair('player:obstacle', None, o)
+                    print(f'obstacle added: {o.get_bb()}')
+
+                else:
+                    if self.sx > e.x:
+                        sx, e.x = e.x, self.sx
+                    if self.sy > game_height - e.y:
+                        sy, e.y = game_height - e.y, self.sy
+                    else:
+                        e.y = game_height - e.y
+
+                    o = Obstacle(self.sx, self.sy, e.x, e.y)
+                    self.ob.append(o)
+                    gameWorld.addObject(o, 0)
+                    gameWorld.add_collision_pair('player:obstacle', None, o)
 
         elif e.button == SDL_BUTTON_RIGHT:
             if e.type == SDL_MOUSEBUTTONDOWN:
@@ -119,20 +147,33 @@ class Map:
                     if 20 > (o.right - o.left) * (o.top - o.bottom):
                         gameWorld.removeObject(o)
                         self.ob.remove(o)
-                    if o.left < e.x < o.right:
-                        if o.bottom < gameWorld.game_height - e.y < o.top:
-                            gameWorld.removeObject(o)
-                            self.ob.remove(o)
+                    if self.scrolling:
+                        cx, cy = self.world_to_camera(e.x, game_height - e.y)
+                        if o.left < cx < o.right:
+                            if o.bottom < cy < o.top:
+                                gameWorld.removeObject(o)
+                                self.ob.remove(o)
+                    else:
+                        if o.left < e.x < o.right:
+                            if o.bottom < gameWorld.game_height - e.y < o.top:
+                                gameWorld.removeObject(o)
+                                self.ob.remove(o)
 
     def save_map(self):
         with open('village.pkl', 'wb') as file:
             pickle.dump(self.ob, file)
 
-    def camera_to_world(self):
-        pass
+    def camera_to_world(self, _x, _y):
+        # 카메라 좌표 전달
+        x = _x + self.window_left
+        y = _y + self.window_bottom
+        return x, y
 
-    def world_to_camera(self):
-        pass
+    def world_to_camera(self, _x, _y):
+        # 월드 좌표 전달
+        x = _x - self.window_left
+        y = _y - self.window_bottom
+        return x, y
 
     def remove(self):
         # 맵 객체릉 포함한 ob, portal 정보까지 전부다 삭제하기

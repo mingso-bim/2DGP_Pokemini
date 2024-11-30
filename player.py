@@ -70,14 +70,22 @@ class Player:
         if self.visible == False:
             return
         self.stateMachine.render()
-        draw_rectangle(*self.get_bb())
+
+        if self.scrolling:
+            sx = self.x - gameWorld.get_map().window_left
+            sy = self.y - gameWorld.get_map().window_bottom + gameWorld.get_map().ch
+            draw_rectangle(*self.get_bb(sx, sy))
+        else:
+            draw_rectangle(*self.get_bb())
 
 
     def handle_events(self, e):
         self.stateMachine.addEvent(('INPUT', e))
 
 
-    def get_bb(self):
+    def get_bb(self, locX = None, locY = None):
+        if locX and locY:
+            return locX - 15, locY - 25, locX + 25, locY + 20
         return self.x - 15, self.y - 25, self.x + 25, self.y + 20
 
 
