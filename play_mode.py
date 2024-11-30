@@ -52,8 +52,8 @@ def handle_events():
             gameWorld.get_map().save_map()
             print('saved')
         elif (SDL_KEYDOWN, SDLK_F2) == (e.type, e.key):
-            #map.loadMap()
-            print('loaded')
+            gameWorld.get_player().scrolling = True
+            print('scr')
         elif (SDL_KEYDOWN, SDLK_F3) == (e.type, e.key):
             game_framework.push_mode(battle_mode)
             print('battle mode')

@@ -90,7 +90,8 @@ class Map:
             draw_rectangle(*p.get_bb())
 
     def update(self):
-        pass
+        self.window_left = clamp(0, int(gameWorld.get_player().x - self.cw // 2), self.w - self.cw - 1)
+        self.window_bottom = clamp(0, int(gameWorld.get_player().y - self.ch // 2), self.h - self.ch - 1)
 
     def handle_event(self, e):
         if e.button == SDL_BUTTON_LEFT:
@@ -123,12 +124,14 @@ class Map:
                             gameWorld.removeObject(o)
                             self.ob.remove(o)
 
-
     def save_map(self):
         with open('village.pkl', 'wb') as file:
             pickle.dump(self.ob, file)
 
-    def change_coordinate(self):
+    def camera_to_world(self):
+        pass
+
+    def world_to_camera(self):
         pass
 
     def remove(self):

@@ -68,8 +68,9 @@ class RunRight:
         player.x += player.speed * game_framework.frame_time * player.dirX
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
 
-        #player.x = clamp(50.0, player.x, gameWorld.get_map().w - 50.0)
-        #player.y = clamp(50.0 + gameWorld.get_map().ch, player.y, gameWorld.get_map().h - 50.0 + gameWorld.get_map().ch)
+        if player.scrolling:
+            player.x = clamp(25.0, player.x, gameWorld.get_map().w - 25.0)
+            player.y = clamp(25.0, player.y, gameWorld.get_map().h - 25.0)
 
     @staticmethod
     def render(player):
@@ -78,7 +79,7 @@ class RunRight:
 
         if player.scrolling:
             sx = player.x - gameWorld.get_map().window_left
-            sy = player.y - gameWorld.get_map().window_bottom
+            sy = player.y - gameWorld.get_map().window_bottom + gameWorld.get_map().ch
         else:
             sx = player.x
             sy = player.y
@@ -108,7 +109,7 @@ class RunRightUp:
 
         if player.scrolling:
             sx = player.x - gameWorld.get_map().window_left
-            sy = player.y - gameWorld.get_map().window_bottom
+            sy = player.y - gameWorld.get_map().window_bottom + gameWorld.get_map().ch
         else:
             sx = player.x
             sy = player.y
@@ -138,7 +139,7 @@ class RunRightDown:
 
         if player.scrolling:
             sx = player.x - gameWorld.get_map().window_left
-            sy = player.y - gameWorld.get_map().window_bottom
+            sy = player.y - gameWorld.get_map().window_bottom + gameWorld.get_map().ch
         else:
             sx = player.x
             sy = player.y
@@ -166,8 +167,9 @@ class RunLeft:
         player.x += player.speed * game_framework.frame_time * player.dirX
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
 
-        #player.x = clamp(50.0, player.x, gameWorld.get_map().w - 50.0)
-        #player.y = clamp(50.0 + gameWorld.get_map().ch, player.y, gameWorld.get_map().h - 50.0 + gameWorld.get_map().ch)
+        if player.scrolling:
+            player.x = clamp(25.0, player.x, gameWorld.get_map().w - 25.0)
+            player.y = clamp(25.0, player.y, gameWorld.get_map().h - 25.0)
 
     @staticmethod
     def render(player):
@@ -176,7 +178,7 @@ class RunLeft:
 
         if player.scrolling:
             sx = player.x - gameWorld.get_map().window_left
-            sy = player.y - gameWorld.get_map().window_bottom
+            sy = player.y - gameWorld.get_map().window_bottom + gameWorld.get_map().ch
         else:
             sx = player.x
             sy = player.y
@@ -206,7 +208,7 @@ class RunLeftUp:
 
         if player.scrolling:
             sx = player.x - gameWorld.get_map().window_left
-            sy = player.y - gameWorld.get_map().window_bottom
+            sy = player.y - gameWorld.get_map().window_bottom + gameWorld.get_map().ch
         else:
             sx = player.x
             sy = player.y
@@ -235,7 +237,7 @@ class RunLeftDown:
 
         if player.scrolling:
             sx = player.x - gameWorld.get_map().window_left
-            sy = player.y - gameWorld.get_map().window_bottom
+            sy = player.y - gameWorld.get_map().window_bottom + gameWorld.get_map().ch
         else:
             sx = player.x
             sy = player.y
@@ -262,8 +264,9 @@ class RunUp:
         player.y += player.speed * game_framework.frame_time * player.dirY
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
 
-        #player.x = clamp(50.0, player.x, gameWorld.get_map().w - 50.0)
-        #player.y = clamp(50.0 + gameWorld.get_map().ch, player.y, gameWorld.get_map().h - 50.0 + gameWorld.get_map().ch)
+        if player.scrolling:
+            player.x = clamp(25.0, player.x, gameWorld.get_map().w - 25.0)
+            player.y = clamp(25.0, player.y, gameWorld.get_map().h - 25.0)
 
     @staticmethod
     def render(player):
@@ -272,7 +275,7 @@ class RunUp:
 
         if player.scrolling:
             sx = player.x - gameWorld.get_map().window_left
-            sy = player.y - gameWorld.get_map().window_bottom
+            sy = player.y - gameWorld.get_map().window_bottom + gameWorld.get_map().ch
         else:
             sx = player.x
             sy = player.y
@@ -299,8 +302,9 @@ class RunDown:
         player.y += player.speed * game_framework.frame_time * player.dirY
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
 
-        #player.x = clamp(50.0, player.x, gameWorld.get_map().w - 50.0)
-        #player.y = clamp(50.0 + gameWorld.get_map().ch, player.y, gameWorld.get_map().h - 50.0 + gameWorld.get_map().ch)
+        if player.scrolling:
+            player.x = clamp(25.0, player.x, gameWorld.get_map().w - 25.0)
+            player.y = clamp(25.0, player.y, gameWorld.get_map().h - 25.0)
 
     @staticmethod
     def render(player):
@@ -309,7 +313,7 @@ class RunDown:
 
         if player.scrolling:
             sx = player.x - gameWorld.get_map().window_left
-            sy = player.y - gameWorld.get_map().window_bottom
+            sy = player.y - gameWorld.get_map().window_bottom + gameWorld.get_map().ch
         else:
             sx = player.x
             sy = player.y
@@ -339,7 +343,7 @@ class Idle:
 
         if player.scrolling:
             sx = player.x - gameWorld.get_map().window_left
-            sy = player.y - gameWorld.get_map().window_bottom
+            sy = player.y - gameWorld.get_map().window_bottom + gameWorld.get_map().ch
         else:
             sx = player.x
             sy = player.y
