@@ -55,7 +55,7 @@ TURTWIG = Pokemon("모부기", skill.QUICK_ATTACK, skill.RAZOR_LEAF)
 TURTWIG.renderXY.append(0)
 TURTWIG.renderXY.append(346)
 
-CHIKORITA = Pokemon("이상해씨", skill.CUTTING_GRASS, skill.BRANCH_POKE)
+CHIKORITA = Pokemon("치코리타", skill.CUTTING_GRASS, skill.BRANCH_POKE)
 CHIKORITA.renderXY.append(0)
 CHIKORITA.renderXY.append(460 - 229)
 

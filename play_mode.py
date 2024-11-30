@@ -1,10 +1,11 @@
 from pico2d import *
 import game_framework
-from map import Obstacle
+from map import Obstacle, game_width
 import map
 import gameWorld
 import battle_mode
 import pokemon, skill
+import trainer
 
 def init():
     global p
@@ -13,7 +14,7 @@ def init():
     p = gameWorld.p
     gameWorld.addObject(p, 1)
 
-    m = map.init_village()
+    m = map.init_road()
     gameWorld.insertObject(m, 0)
 
     gameWorld.add_collision_pair('player:obstacle', p, None)

@@ -148,7 +148,7 @@ class Map:
                         gameWorld.removeObject(o)
                         self.ob.remove(o)
                     if self.scrolling:
-                        cx, cy = self.world_to_camera(e.x, game_height - e.y)
+                        cx, cy = self.camera_to_world(e.x, self.ch * 2 - e.y - self.ch)
                         if o.left < cx < o.right:
                             if o.bottom < cy < o.top:
                                 gameWorld.removeObject(o)
@@ -160,7 +160,7 @@ class Map:
                                 self.ob.remove(o)
 
     def save_map(self):
-        with open('village.pkl', 'wb') as file:
+        with open('road.pkl', 'wb') as file:
             pickle.dump(self.ob, file)
 
     def camera_to_world(self, _x, _y):
@@ -196,6 +196,7 @@ def init_house():
 
     for o in loaded_data:
         m.ob.append(o)
+        gameWorld.addObject(o, 0)
         gameWorld.add_collision_pair('player:obstacle', None, o)
 
     # portal 생성
@@ -218,6 +219,7 @@ def init_village():
 
     for o in loaded_data:
         m.ob.append(o)
+        gameWorld.addObject(o, 0)
         gameWorld.add_collision_pair('player:obstacle', None, o)
 
     return m
@@ -235,6 +237,7 @@ def init_road():
 
     for o in loaded_data:
         m.ob.append(o)
+        gameWorld.addObject(o, 0)
         gameWorld.add_collision_pair('player:obstacle', None, o)
 
     return m
