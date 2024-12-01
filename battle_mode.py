@@ -128,6 +128,17 @@ class Battle:
         caster.cur_pp -= skill.pp
         subject.cur_hp -= int(skill.attack * 0.1)
 
+        if subject.cur_hp < 0:
+            s = subject.name + '은(는) 쓰러졌다!'
+            self.script_q.put(s)
+            if caster == self.p_pokemon:
+                s = caster.name + '은(는) ' + str(subject.drop_exp) + '경험치를 얻었다!'
+                s = caster.name + '은(는) ' + str(subject.drop_exp) + '경험치를 얻었다!'
+                caster.cur_exp += subject.drop_exp
+                self.script_q.put(s)
+            else:
+                s = subject.name + '은(는) 쓰러졌다!'
+
         r = randint(0, 100)
         if (r < 30):
             if skill.type == Type.POISON:
@@ -144,16 +155,6 @@ class Battle:
                 subject.status = Status.PARALYSIS
                 s = subject.name + '은(는) 마비되어 움직이기 어려워졌다!'
                 self.script_q.put(s)
-
-        if subject.cur_hp < 0:
-            s = subject.name + '은(는) 쓰러졌다!'
-            self.script_q.put(s)
-            if caster == self.p_pokemon:
-                s = caster.name + '은(는) ' + str(subject.drop_exp) + '경험치를 얻었다!'
-                s = caster.name + '은(는) ' + str(subject.drop_exp) + '경험치를 얻었다!'
-                self.script_q.put(s)
-            else:
-                s = subject.name + '은(는) 쓰러졌다!'
 
 
     def handle_input(self, e):
@@ -175,7 +176,7 @@ class Battle:
 
 
     def render(self):
-        print(self.script_q.qsize())
+        print(self.turn)
         pp = 0
         if self.select_mode == 'main':
             Battle.touchpad.clip_draw(0, 783 - 202, 255, 202, game_width/2, game_height * 0.27, game_width, game_height * 0.55)
@@ -258,17 +259,63 @@ class Battle:
         Battle.background.clip_draw(257, 0, 259, 144, game_width * 0.46, game_height * 0.88, 259 * 2.5, 144 * 2.5)
 
         # 상대 포켓몬 UI
+        if self.o_pokemon.cur_hp < 0:
+            self.o_pokemon.cur_hp = 0
         self.o_pokemon.render('f', game_width * 0.7, game_height * 0.87)
         Battle.UI.clip_draw(0, 80, 120, 29, game_width * 0.199, game_height * 0.92, 119*2, 58)
         Battle.font.draw(game_width * 0.01, game_height * 0.93, self.o_pokemon.name)
         Battle.UI.clip_draw(1 + 8 * (self.o_pokemon.level), 1, 8, 7, game_width * 0.285, game_height * 0.928, 16, 14)
+        # 체력 바 render
+        hp_percent = self.o_pokemon.cur_hp / self.o_pokemon.max_hp
+        length = int(hp_percent * 48)
+        if hp_percent > 0.5:
+            Battle.UI.clip_draw_to_origin(0, 14, length, 7, game_width * 0.17 - 3, game_height * 0.89 - 2, length * 2, 14)
+        elif 0.25 <= hp_percent <= 0.5:
+            Battle.UI.clip_draw_to_origin(0, 21, length, 7, game_width * 0.17 - 3, game_height * 0.89 - 2, length * 2, 14)
+        elif hp_percent < 0.25:
+            Battle.UI.clip_draw_to_origin(0, 28, length, 7, game_width * 0.17 - 3, game_height * 0.89 - 2, length * 2, 14)
+        # 상태이상 render 20, 8
+        o_h = 0
+        if self.o_pokemon.status == Status.POISON:
+            o_h = 27
+        elif self.o_pokemon.status == Status.BURN:
+            o_h = 19
+        elif self.o_pokemon.status == Status.PARALYSIS:
+            o_h = 11
+        Battle.UI.clip_draw(100, o_h, 20, 8, game_width * 0.06, game_height * 0.90 - 2, 40, 16)
 
         # 내 포켓몬 UI
         self.p_pokemon.render('b', game_width * 0.23, game_height * 0.73)
         Battle.UI.clip_draw(0, 109-72, 120, 41, game_width * 0.81, game_height * 0.70, 119*2, 41 * 2)
-        percentage = int(self.p_pokemon.exp / self.p_pokemon.max_exp * 100)
-        Battle.UI.clip_draw(0, 11, 89, 3, game_width * 0.853, game_height * 0.645, 178, 6)
-        Battle.UI.clip_draw(1 + 8 * (self.p_pokemon.level), 1, 8, 7, game_width * 0.934, game_height * 0.725, 16, 14)
+        Battle.UI.clip_draw(1 + 8 * self.p_pokemon.level, 1, 8, 7, game_width * 0.934, game_height * 0.725, 16, 14)
+
+        #체력 바 render
+        hp_percent = self.p_pokemon.cur_hp / self.p_pokemon.max_hp
+        length = int(hp_percent * 48)
+        if hp_percent > 0.5:
+            Battle.UI.clip_draw_to_origin(0, 14, length, 7, game_width * 0.82 - 1, game_height * 0.68 + 2, length * 2, 14)
+        elif 0.25 <= hp_percent <= 0.5:
+            Battle.UI.clip_draw_to_origin(0, 21, length, 7, game_width * 0.82 - 1, game_height * 0.68 + 2, length * 2, 14)
+        elif hp_percent < 0.25:
+            Battle.UI.clip_draw_to_origin(0, 28, length, 7, game_width * 0.82 - 1, game_height * 0.68 + 2, length * 2, 14)
+
+        # 경험치 바 render
+        exp_percent = self.p_pokemon.exp / self.p_pokemon.max_exp
+        length = int(exp_percent * 89)
+        Battle.UI.clip_draw_to_origin(0, 11, length, 3, game_width * 0.72 - 7, game_height * 0.645 - 3, length*2, 6)
+
+        # 상태이상 render 20, 8
+        h = 0
+        if self.p_pokemon.status == Status.POISON:
+            h = 27
+        elif self.p_pokemon.status == Status.BURN:
+            h = 19
+        elif self.p_pokemon.status == Status.PARALYSIS:
+            h = 11
+        Battle.UI.clip_draw(100, h, 20, 8, game_width * 0.71, game_height * 0.69 + 2, 40, 16)
+
+        if self.p_pokemon.cur_hp < 0:
+            self.p_pokemon.cur_hp = 0
         hp1 = self.p_pokemon.cur_hp // 100
         if hp1 != 0:
             Battle.UI.clip_draw(9 * hp1, 1, 8, 7, game_width * 0.83, game_height * 0.67, 16, 14)

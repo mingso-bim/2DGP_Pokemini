@@ -6,15 +6,18 @@ import gameWorld
 import battle_mode
 import pokemon, skill
 import trainer
+import skill
 
 def init():
     global p
     global m
 
     p = gameWorld.p
+    p.x, p.y = 300, 450
+
     gameWorld.addObject(p, 1)
 
-    m = map.init_road()
+    m = map.init_house()
     gameWorld.insertObject(m, 0)
 
     gameWorld.add_collision_pair('player:obstacle', p, None)
@@ -28,7 +31,13 @@ def debugMode():
     p.addPokemon(pokemon.PSYDUCK)
     p.pokemons[0].addSkill(skill.FIRE_FANG)
     p.pokemons[0].addSkill(skill.THUNDER)
-    p.pokemons[0].exp = 40
+    p.pokemons[0].exp = 15
+
+    t = trainer.Trainer()
+    t.x, t.y = 300, 550
+    t.pokemons.append(pokemon.PACHIRISU)
+    gameWorld.add_collision_pair('player:trainer', None, t)
+    gameWorld.addObject(t, 0)
 
 def finish():
     gameWorld.clear()

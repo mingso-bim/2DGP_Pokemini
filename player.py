@@ -1,4 +1,6 @@
 from pico2d import *
+
+import battle_mode
 from stateMachine import *
 from state import *
 
@@ -93,8 +95,10 @@ class Player:
         if group == 'player:obstacle':
             self.x = self.prevX
             self.y = self.prevY
+
         elif group == 'player:portal':
             pass
+
         elif group == 'player:trainer':
             self.x = self.prevX
             self.y = self.prevY
@@ -103,5 +107,17 @@ class Player:
             self.visible = False
             self.stateMachine.start(Idle)
             self.frame = 0
+
+        elif group == 'player:bush':
+            if other.battle:
+                return
+            self.visible = False
+            self.stateMachine.start(Idle)
+            self.frame = 0
+
+            battle_mode.other = other
+            game_framework.push_mode(battle_mode)
+            other.battle = True
+
 
 
