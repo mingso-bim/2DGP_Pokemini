@@ -1,13 +1,13 @@
 from random import randint
+import gameWorld
 from game_framework import change_mode, pop_mode
 from stateMachine import StateMachine
 from pico2d import *
-import gameWorld
 import game_framework
-from gameWorld import game_width, game_height
 from battle_state import *
 from skill import Type, Status
 from queue import Queue
+from skill import advantage, disadvantage
 
 other = None
 
@@ -98,18 +98,32 @@ class Battle:
         print(caster.status)
         if caster.status == Status.POISON:
             s = caster.name + '은(는) 독에 의한 데미지를 입었다!'
-            caster.cur_hp - int(caster.max_hp * 0.1)
+            caster.cur_hp -= int(caster.max_hp * 0.1)
             caster.status_turn += 1
             self.script_q.put(s)
         elif caster.status == Status.BURN:
             s = caster.name + '은(는) 화상 데미지를 입었다!'
-            caster.cur_hp - int(caster.max_hp * 0.1)
+            caster.cur_hp -= int(caster.max_hp * 0.1)
             caster.status_turn += 1
             self.script_q.put(s)
         elif caster.status == Status.PARALYSIS:
             s = caster.name + '은(는) 몸이 저려서 움직일 수 없다!'
             caster.status_turn += 1
             self.script_q.put(s)
+            return
+
+        if caster.cur_hp < 0:
+            s = caster.name + '은(는) 쓰러졌다!'
+            self.script_q.put(s)
+            if caster != self.p_pokemon:
+                s = self.p_pokemon.name + '은(는) ' + str(caster.drop_exp) + '경험치를 얻었다!'
+                s = self.p_pokemon.name + '은(는) ' + str(caster.drop_exp) + '경험치를 얻었다!'
+                self.p_pokemon.exp += caster.drop_exp
+                self.script_q.put(s)
+                if self.p_pokemon.exp > self.p_pokemon.max_exp:
+                    e = self.p_pokemon.exp - self.p_pokemon.max_exp
+                    self.p_pokemon.level += 1
+                    self.p_pokemon.exp = e
             return
 
         skill = caster.skill[skill]
@@ -126,7 +140,30 @@ class Battle:
             return
 
         caster.cur_pp -= skill.pp
-        subject.cur_hp -= int(skill.attack * 0.1)
+        
+        # 상성
+        ad = advantage.get(skill.type)
+        disad = disadvantage.get(skill.type)
+
+        efficient = 0
+        if ad != None:
+            if ad == subject.type:
+                efficient = 0.2
+                s = '효과가 굉장했다!'
+                self.script_q.put(s)
+        if disad != None:
+            if disad == subject.type:
+                efficient = 0.05
+                s = '효과가 별로인 듯 하다'
+                self.script_q.put(s)
+        if efficient == 0:
+            efficient = 0.1
+
+        if skill.type == caster.type:
+            efficient *= 1.5
+        print(efficient)
+            
+        subject.cur_hp -= int(skill.attack * efficient)
 
         if subject.cur_hp < 0:
             s = subject.name + '은(는) 쓰러졌다!'
@@ -134,10 +171,15 @@ class Battle:
             if caster == self.p_pokemon:
                 s = caster.name + '은(는) ' + str(subject.drop_exp) + '경험치를 얻었다!'
                 s = caster.name + '은(는) ' + str(subject.drop_exp) + '경험치를 얻었다!'
-                caster.cur_exp += subject.drop_exp
+                caster.exp += subject.drop_exp
                 self.script_q.put(s)
+                if self.p_pokemon.exp > self.p_pokemon.max_exp:
+                    e = self.p_pokemon.exp - self.p_pokemon.max_exp
+                    self.p_pokemon.level += 1
+                    self.p_pokemon.exp = e
             else:
                 s = subject.name + '은(는) 쓰러졌다!'
+            return
 
         r = randint(0, 100)
         if (r < 30):
@@ -176,104 +218,103 @@ class Battle:
 
 
     def render(self):
-        print(self.turn)
         pp = 0
         if self.select_mode == 'main':
-            Battle.touchpad.clip_draw(0, 783 - 202, 255, 202, game_width/2, game_height * 0.27, game_width, game_height * 0.55)
+            Battle.touchpad.clip_draw(0, 783 - 202, 255, 202, gameWorld.game_width/2, gameWorld.game_height * 0.27, gameWorld.game_width, gameWorld.game_height * 0.55)
             if self.select == 0:
                 Battle.touchpad.clip_draw(295, 783 - 131, 216, 90,
-                                          game_width * 0.502, game_height * 0.325, game_width * 0.88, game_height * 0.26)
+                                          gameWorld.game_width * 0.502, gameWorld.game_height * 0.325, gameWorld.game_width * 0.88, gameWorld.game_height * 0.26)
             elif self.select == 1:
                 Battle.touchpad.clip_draw(295, 783 - 246, 78, 44,
-                                          game_width * 0.157, game_height * 0.085, 78 * 2, 44 * 2)
+                                          gameWorld.game_width * 0.157, gameWorld.game_height * 0.085, 78 * 2, 44 * 2)
             elif self.select == 2:
                 Battle.touchpad.clip_draw(295, 783 - 246, 78, 44,
-                                          game_width * 0.502, game_height * 0.07, 78 * 2, 44 * 2)
+                                          gameWorld.game_width * 0.502, gameWorld.game_height * 0.07, 78 * 2, 44 * 2)
             elif self.select == 3:
                 Battle.touchpad.clip_draw(295, 783 - 246, 78, 44,
-                                          game_width * 0.845, game_height * 0.085, 78 * 2, 44 * 2)
-            self.p_pokemon.render('m', game_width * 0.4, game_height * 0.335)
+                                          gameWorld.game_width * 0.845, gameWorld.game_height * 0.085, 78 * 2, 44 * 2)
+            self.p_pokemon.render('m', gameWorld.game_width * 0.4, gameWorld.game_height * 0.335)
 
         elif self.select_mode == 'skill':
-            Battle.touchpad.clip_draw(0, 783 - 406, 255, 202, game_width / 2, game_height * 0.27, game_width, game_height * 0.55)
+            Battle.touchpad.clip_draw(0, 783 - 406, 255, 202, gameWorld.game_width / 2, gameWorld.game_height * 0.27, gameWorld.game_width, gameWorld.game_height * 0.55)
             # 한 칸당 124, 55
             # 0번째 칸
             Battle.touchpad.clip_draw(0, 317 - (self.p_pokemon.skill[0].type.value - 2) * 55, 124, 55,
-                                      game_width * 0.25, game_height * 0.41, 248 * 1.2, 110)
-            Battle.font.draw(game_width * 0.06, game_height * 0.43, self.p_pokemon.skill[0].name)
+                                      gameWorld.game_width * 0.25, gameWorld.game_height * 0.41, 248 * 1.2, 110)
+            Battle.font.draw(gameWorld.game_width * 0.06, gameWorld.game_height * 0.43, self.p_pokemon.skill[0].name)
             if self.p_pokemon.skill[0].pp < self.p_pokemon.cur_pp:
                 pp = self.p_pokemon.skill[0].pp
             else:
                 pp = self.p_pokemon.cur_pp
-            Battle.font.draw(game_width * 0.29, game_height * 0.383, str(pp))
-            Battle.font.draw(game_width * 0.38, game_height * 0.383, str(self.p_pokemon.skill[0].pp))
+            Battle.font.draw(gameWorld.game_width * 0.29, gameWorld.game_height * 0.383, str(pp))
+            Battle.font.draw(gameWorld.game_width * 0.38, gameWorld.game_height * 0.383, str(self.p_pokemon.skill[0].pp))
 
             #1번째 칸
             Battle.touchpad.clip_draw(0, 317 - (self.p_pokemon.skill[1].type.value - 2) * 55, 124, 55,
-                                      game_width * 0.75, game_height * 0.41, 248 * 1.2, 110)
-            Battle.font.draw(game_width * 0.56, game_height * 0.43, self.p_pokemon.skill[1].name)
+                                      gameWorld.game_width * 0.75, gameWorld.game_height * 0.41, 248 * 1.2, 110)
+            Battle.font.draw(gameWorld.game_width * 0.56, gameWorld.game_height * 0.43, self.p_pokemon.skill[1].name)
             if self.p_pokemon.skill[1].pp < self.p_pokemon.cur_pp:
                 pp = self.p_pokemon.skill[1].pp
             else:
                 pp = self.p_pokemon.cur_pp
-            Battle.font.draw(game_width * 0.79, game_height * 0.383, str(pp))
-            Battle.font.draw(game_width * 0.88, game_height * 0.383, str(self.p_pokemon.skill[1].pp))
+            Battle.font.draw(gameWorld.game_width * 0.79, gameWorld.game_height * 0.383, str(pp))
+            Battle.font.draw(gameWorld.game_width * 0.88, gameWorld.game_height * 0.383, str(self.p_pokemon.skill[1].pp))
 
             # 2번째 칸
             if len(self.p_pokemon.skill) > 2:
                 Battle.touchpad.clip_draw(0, 317 - (self.p_pokemon.skill[2].type.value - 2) * 55, 124, 55,
-                                          game_width * 0.25, game_height * 0.23, 248 * 1.2, 110)
-                Battle.font.draw(game_width * 0.06, game_height * 0.25, self.p_pokemon.skill[2].name)
+                                          gameWorld.game_width * 0.25, gameWorld.game_height * 0.23, 248 * 1.2, 110)
+                Battle.font.draw(gameWorld.game_width * 0.06, gameWorld.game_height * 0.25, self.p_pokemon.skill[2].name)
                 if self.p_pokemon.skill[2].pp < self.p_pokemon.cur_pp:
                     pp = self.p_pokemon.skill[2].pp
                 else:
                     pp = self.p_pokemon.cur_pp
-                Battle.font.draw(game_width * 0.29, game_height * 0.205, str(pp))
-                Battle.font.draw(game_width * 0.38, game_height * 0.205, str(self.p_pokemon.skill[2].pp))
+                Battle.font.draw(gameWorld.game_width * 0.29, gameWorld.game_height * 0.205, str(pp))
+                Battle.font.draw(gameWorld.game_width * 0.38, gameWorld.game_height * 0.205, str(self.p_pokemon.skill[2].pp))
 
             if len(self.p_pokemon.skill) > 3:
                 Battle.touchpad.clip_draw(0, 317 - (self.p_pokemon.skill[3].type.value - 2) * 55, 124, 55,
-                                          game_width * 0.75, game_height * 0.23, 248 * 1.2, 110)
-                Battle.font.draw(game_width * 0.56, game_height * 0.25, self.p_pokemon.skill[3].name)
+                                          gameWorld.game_width * 0.75, gameWorld.game_height * 0.23, 248 * 1.2, 110)
+                Battle.font.draw(gameWorld.game_width * 0.56, gameWorld.game_height * 0.25, self.p_pokemon.skill[3].name)
                 if self.p_pokemon.skill[3].pp < self.p_pokemon.cur_pp:
                     pp = self.p_pokemon.skill[3].pp
                 else:
                     pp = self.p_pokemon.cur_pp
-                Battle.font.draw(game_width * 0.79, game_height * 0.205, str(pp))
-                Battle.font.draw(game_width * 0.88, game_height * 0.205, str(self.p_pokemon.skill[3].pp))
+                Battle.font.draw(gameWorld.game_width * 0.79, gameWorld.game_height * 0.205, str(pp))
+                Battle.font.draw(gameWorld.game_width * 0.88, gameWorld.game_height * 0.205, str(self.p_pokemon.skill[3].pp))
 
             # select 그리기
             if self.select == 0:
-                Battle.touchpad.clip_draw(295, 783 - 194, 124, 55, game_width * 0.25, game_height * 0.41, 248 * 1.2, 110)
+                Battle.touchpad.clip_draw(295, 783 - 194, 124, 55, gameWorld.game_width * 0.25, gameWorld.game_height * 0.41, 248 * 1.2, 110)
             elif self.select == 1:
-                Battle.touchpad.clip_draw(295, 783 - 194, 124, 55, game_width * 0.75, game_height * 0.41, 248 * 1.2, 110)
+                Battle.touchpad.clip_draw(295, 783 - 194, 124, 55, gameWorld.game_width * 0.75, gameWorld.game_height * 0.41, 248 * 1.2, 110)
             elif self.select == 2:
-                Battle.touchpad.clip_draw(295, 783 - 194, 124, 55, game_width * 0.25, game_height * 0.23, 248 * 1.2, 110)
+                Battle.touchpad.clip_draw(295, 783 - 194, 124, 55, gameWorld.game_width * 0.25, gameWorld.game_height * 0.23, 248 * 1.2, 110)
             elif self.select == 3:
-                Battle.touchpad.clip_draw(295, 783 - 194, 124, 55, game_width * 0.75, game_height * 0.23, 248 * 1.2, 110)
+                Battle.touchpad.clip_draw(295, 783 - 194, 124, 55, gameWorld.game_width * 0.75, gameWorld.game_height * 0.23, 248 * 1.2, 110)
             elif self.select == 4:
-                Battle.touchpad.clip_draw(295, 783 - 300, 236, 45, game_width * 0.5, game_height * 0.06, 472 * 1.2, 90)
+                Battle.touchpad.clip_draw(295, 783 - 300, 236, 45, gameWorld.game_width * 0.5, gameWorld.game_height * 0.06, 472 * 1.2, 90)
 
         # 화면 상단 출력
-        Battle.background.clip_draw(0, 0, 255, 144, game_width/2, game_height * 0.75, game_width, game_height * 0.5)
-        Battle.background.clip_draw(257, 0, 259, 144, game_width * 0.46, game_height * 0.88, 259 * 2.5, 144 * 2.5)
+        Battle.background.clip_draw(0, 0, 255, 144, gameWorld.game_width/2, gameWorld.game_height * 0.75, gameWorld.game_width, gameWorld.game_height * 0.5)
+        Battle.background.clip_draw(257, 0, 259, 144, gameWorld.game_width * 0.46, gameWorld.game_height * 0.88, 259 * 2.5, 144 * 2.5)
 
         # 상대 포켓몬 UI
         if self.o_pokemon.cur_hp < 0:
             self.o_pokemon.cur_hp = 0
-        self.o_pokemon.render('f', game_width * 0.7, game_height * 0.87)
-        Battle.UI.clip_draw(0, 80, 120, 29, game_width * 0.199, game_height * 0.92, 119*2, 58)
-        Battle.font.draw(game_width * 0.01, game_height * 0.93, self.o_pokemon.name)
-        Battle.UI.clip_draw(1 + 8 * (self.o_pokemon.level), 1, 8, 7, game_width * 0.285, game_height * 0.928, 16, 14)
+        self.o_pokemon.render('f', gameWorld.game_width * 0.7, gameWorld.game_height * 0.87)
+        Battle.UI.clip_draw(0, 80, 120, 29, gameWorld.game_width * 0.199, gameWorld.game_height * 0.92, 119*2, 58)
+        Battle.font.draw(gameWorld.game_width * 0.01, gameWorld.game_height * 0.93, self.o_pokemon.name)
+        Battle.UI.clip_draw(1 + 8 * (self.o_pokemon.level), 1, 8, 7, gameWorld.game_width * 0.285, gameWorld.game_height * 0.928, 16, 14)
         # 체력 바 render
         hp_percent = self.o_pokemon.cur_hp / self.o_pokemon.max_hp
         length = int(hp_percent * 48)
         if hp_percent > 0.5:
-            Battle.UI.clip_draw_to_origin(0, 14, length, 7, game_width * 0.17 - 3, game_height * 0.89 - 2, length * 2, 14)
+            Battle.UI.clip_draw_to_origin(0, 14, length, 7, gameWorld.game_width * 0.17 - 3, gameWorld.game_height * 0.89 - 2, length * 2, 14)
         elif 0.25 <= hp_percent <= 0.5:
-            Battle.UI.clip_draw_to_origin(0, 21, length, 7, game_width * 0.17 - 3, game_height * 0.89 - 2, length * 2, 14)
+            Battle.UI.clip_draw_to_origin(0, 21, length, 7, gameWorld.game_width * 0.17 - 3, gameWorld.game_height * 0.89 - 2, length * 2, 14)
         elif hp_percent < 0.25:
-            Battle.UI.clip_draw_to_origin(0, 28, length, 7, game_width * 0.17 - 3, game_height * 0.89 - 2, length * 2, 14)
+            Battle.UI.clip_draw_to_origin(0, 28, length, 7, gameWorld.game_width * 0.17 - 3, gameWorld.game_height * 0.89 - 2, length * 2, 14)
         # 상태이상 render 20, 8
         o_h = 0
         if self.o_pokemon.status == Status.POISON:
@@ -282,27 +323,27 @@ class Battle:
             o_h = 19
         elif self.o_pokemon.status == Status.PARALYSIS:
             o_h = 11
-        Battle.UI.clip_draw(100, o_h, 20, 8, game_width * 0.06, game_height * 0.90 - 2, 40, 16)
+        Battle.UI.clip_draw(100, o_h, 20, 8, gameWorld.game_width * 0.06, gameWorld.game_height * 0.90 - 2, 40, 16)
 
         # 내 포켓몬 UI
-        self.p_pokemon.render('b', game_width * 0.23, game_height * 0.73)
-        Battle.UI.clip_draw(0, 109-72, 120, 41, game_width * 0.81, game_height * 0.70, 119*2, 41 * 2)
-        Battle.UI.clip_draw(1 + 8 * self.p_pokemon.level, 1, 8, 7, game_width * 0.934, game_height * 0.725, 16, 14)
+        self.p_pokemon.render('b', gameWorld.game_width * 0.23, gameWorld.game_height * 0.73)
+        Battle.UI.clip_draw(0, 109-72, 120, 41, gameWorld.game_width * 0.81, gameWorld.game_height * 0.70, 119*2, 41 * 2)
+        Battle.UI.clip_draw(1 + 8 * self.p_pokemon.level, 1, 8, 7, gameWorld.game_width * 0.934, gameWorld.game_height * 0.725, 16, 14)
 
         #체력 바 render
         hp_percent = self.p_pokemon.cur_hp / self.p_pokemon.max_hp
         length = int(hp_percent * 48)
         if hp_percent > 0.5:
-            Battle.UI.clip_draw_to_origin(0, 14, length, 7, game_width * 0.82 - 1, game_height * 0.68 + 2, length * 2, 14)
+            Battle.UI.clip_draw_to_origin(0, 14, length, 7, gameWorld.game_width * 0.82 - 1, gameWorld.game_height * 0.68 + 2, length * 2, 14)
         elif 0.25 <= hp_percent <= 0.5:
-            Battle.UI.clip_draw_to_origin(0, 21, length, 7, game_width * 0.82 - 1, game_height * 0.68 + 2, length * 2, 14)
+            Battle.UI.clip_draw_to_origin(0, 21, length, 7, gameWorld.game_width * 0.82 - 1, gameWorld.game_height * 0.68 + 2, length * 2, 14)
         elif hp_percent < 0.25:
-            Battle.UI.clip_draw_to_origin(0, 28, length, 7, game_width * 0.82 - 1, game_height * 0.68 + 2, length * 2, 14)
+            Battle.UI.clip_draw_to_origin(0, 28, length, 7, gameWorld.game_width * 0.82 - 1, gameWorld.game_height * 0.68 + 2, length * 2, 14)
 
         # 경험치 바 render
         exp_percent = self.p_pokemon.exp / self.p_pokemon.max_exp
         length = int(exp_percent * 89)
-        Battle.UI.clip_draw_to_origin(0, 11, length, 3, game_width * 0.72 - 7, game_height * 0.645 - 3, length*2, 6)
+        Battle.UI.clip_draw_to_origin(0, 11, length, 3, gameWorld.game_width * 0.72 - 7, gameWorld.game_height * 0.645 - 3, length*2, 6)
 
         # 상태이상 render 20, 8
         h = 0
@@ -312,34 +353,34 @@ class Battle:
             h = 19
         elif self.p_pokemon.status == Status.PARALYSIS:
             h = 11
-        Battle.UI.clip_draw(100, h, 20, 8, game_width * 0.71, game_height * 0.69 + 2, 40, 16)
+        Battle.UI.clip_draw(100, h, 20, 8, gameWorld.game_width * 0.71, gameWorld.game_height * 0.69 + 2, 40, 16)
 
         if self.p_pokemon.cur_hp < 0:
             self.p_pokemon.cur_hp = 0
         hp1 = self.p_pokemon.cur_hp // 100
         if hp1 != 0:
-            Battle.UI.clip_draw(9 * hp1, 1, 8, 7, game_width * 0.83, game_height * 0.67, 16, 14)
+            Battle.UI.clip_draw(9 * hp1, 1, 8, 7, gameWorld.game_width * 0.83, gameWorld.game_height * 0.67, 16, 14)
         hp2 = (self.p_pokemon.cur_hp - 100*hp1) // 10
-        Battle.UI.clip_draw(9 * hp2, 1, 8, 7, game_width * 0.855, game_height * 0.67, 16, 14)
+        Battle.UI.clip_draw(9 * hp2, 1, 8, 7, gameWorld.game_width * 0.855, gameWorld.game_height * 0.67, 16, 14)
         hp3 = (self.p_pokemon.cur_hp - 100 * hp1 - 10 * hp2)
-        Battle.UI.clip_draw(9 * hp3, 1, 8, 7, game_width * 0.88, game_height * 0.67, 16, 14)
+        Battle.UI.clip_draw(9 * hp3, 1, 8, 7, gameWorld.game_width * 0.88, gameWorld.game_height * 0.67, 16, 14)
         hp1 = self.p_pokemon.max_hp // 100
 
         if hp1 != 0:
-            Battle.UI.clip_draw(9 * hp1, 1, 8, 7, game_width * 0.94, game_height * 0.67, 16, 14)
+            Battle.UI.clip_draw(9 * hp1, 1, 8, 7, gameWorld.game_width * 0.94, gameWorld.game_height * 0.67, 16, 14)
             hp2 = (self.p_pokemon.max_hp - hp1 * 100) // 10
-            Battle.UI.clip_draw(9 * hp2, 1, 8, 7, game_width * 0.965, game_height * 0.67, 16, 14)
+            Battle.UI.clip_draw(9 * hp2, 1, 8, 7, gameWorld.game_width * 0.965, gameWorld.game_height * 0.67, 16, 14)
             hp3 = (self.p_pokemon.max_hp - hp1 * 100 - hp2 * 10)
-            Battle.UI.clip_draw(9 * hp3, 1, 8, 7, game_width * 0.99, game_height * 0.67, 16, 14)
+            Battle.UI.clip_draw(9 * hp3, 1, 8, 7, gameWorld.game_width * 0.99, gameWorld.game_height * 0.67, 16, 14)
         else:
             hp2 = (self.p_pokemon.max_hp - hp1 * 100) // 10
-            Battle.UI.clip_draw(9 * hp2, 1, 8, 7, game_width * 0.94, game_height * 0.67, 16, 14)
+            Battle.UI.clip_draw(9 * hp2, 1, 8, 7, gameWorld.game_width * 0.94, gameWorld.game_height * 0.67, 16, 14)
             hp3 = (self.p_pokemon.max_hp - hp1 * 100 - hp2 * 10)
-            Battle.UI.clip_draw(9 * hp3, 1, 8, 7, game_width * 0.965, game_height * 0.67, 16, 14)
-        Battle.font.draw(game_width * 0.67, game_height * 0.725, self.p_pokemon.name)
+            Battle.UI.clip_draw(9 * hp3, 1, 8, 7, gameWorld.game_width * 0.965, gameWorld.game_height * 0.67, 16, 14)
+        Battle.font.draw(gameWorld.game_width * 0.67, gameWorld.game_height * 0.725, self.p_pokemon.name)
 
-        Battle.textbox.clip_draw(0, 0, 250, 44, game_width * 0.5, game_height * 0.56, 500 * 1.2, 88)
-        Battle.font.draw(game_width * 0.05, game_height * 0.59, self.cur_script)
+        Battle.textbox.clip_draw(0, 0, 250, 44, gameWorld.game_width * 0.5, gameWorld.game_height * 0.56, 500 * 1.2, 88)
+        Battle.font.draw(gameWorld.game_width * 0.05, gameWorld.game_height * 0.59, self.cur_script)
 
 
     def update(self):

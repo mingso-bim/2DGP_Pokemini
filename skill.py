@@ -28,6 +28,8 @@ class Skill:
         self.pp = _pp
         self.statusChange = _statusChange
 
+advantage = {Type.FIRE: Type.GRASS, Type.WATER: Type.FIRE, Type.GRASS: Type.WATER, Type.ELECTR: Type.WATER, Type.POISON: Type.GRASS}
+disadvantage = {Type.FIRE: Type.WATER, Type.WATER: Type.GRASS, Type.GRASS: Type.FIRE, Type.ELECTR: Type.GRASS}
 
 # TYPE NORMAL
 #몸통박치기
@@ -41,7 +43,7 @@ CUTTING_GRASS = Skill('풀베기', 50, 95, Type.NORMAL, 30, Status.NONE)
 #물대포
 WATER_CANNONS = Skill('물대포', 40, 100, Type.WATER, 25, Status.NONE)
 #하이드로캐논
-HYDROCANNON = Skill('하이드로캐논', 150, 90, Type.WATER, 30, Status.NONE)
+HYDROCANNON = Skill('하이드로캐논', 120, 70, Type.WATER, 30, Status.NONE)
 #바다회오리
 SEA_TORNADO = Skill('바다회오리', 85, 85, Type.WATER, 15, Status.NONE)
 

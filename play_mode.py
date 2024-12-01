@@ -28,14 +28,14 @@ def init():
 
 def debugMode():
     p.setGender('male')
-    p.addPokemon(pokemon.PSYDUCK)
+    p.addPokemon(pokemon.PACHIRISU)
     p.pokemons[0].addSkill(skill.FIRE_FANG)
     p.pokemons[0].addSkill(skill.THUNDER)
     p.pokemons[0].exp = 15
 
     t = trainer.Trainer()
     t.x, t.y = 300, 550
-    t.pokemons.append(pokemon.PACHIRISU)
+    t.pokemons.append(pokemon.PSYDUCK)
     gameWorld.add_collision_pair('player:trainer', None, t)
     gameWorld.addObject(t, 0)
 
