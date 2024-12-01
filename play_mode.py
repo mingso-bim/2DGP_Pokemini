@@ -17,12 +17,13 @@ def init():
 
     gameWorld.addObject(p, 1)
 
-    m = map.init_house()
+    m = map.init_road()
     gameWorld.insertObject(m, 0)
 
     gameWorld.add_collision_pair('player:obstacle', p, None)
     gameWorld.add_collision_pair('player:portal', p, None)
     gameWorld.add_collision_pair('player:trainer', p, None)
+    gameWorld.add_collision_pair('player:bush', p, None)
 
     debugMode()
 
@@ -64,15 +65,13 @@ def handle_events():
         elif (SDL_KEYDOWN, SDLK_F2) == (e.type, e.key):
             gameWorld.get_player().scrolling = True
             print('scr')
-        elif (SDL_KEYDOWN, SDLK_F3) == (e.type, e.key):
-            game_framework.push_mode(battle_mode)
-            print('battle mode')
-            p.visible = False
         elif e.type == SDL_KEYDOWN or e.type == SDL_KEYUP:
             p.handle_events(e)
         elif e.type in (SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP):
             gameWorld.get_map().handle_event(e)
             print('mouse clicked')
+        elif (SDL_KEYDOWN, SDLK_SPACE) == (e.type, e.key):
+            gameWorld.get_map().handle_event(e)
 
 
 def pause(): pass

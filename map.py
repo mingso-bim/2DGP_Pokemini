@@ -1,6 +1,7 @@
 from pico2d import *
 import gameWorld
 import pickle
+import bush
 
 game_width = 600
 game_height = 700
@@ -73,6 +74,7 @@ class Map:
         self.ch = get_canvas_height() // 2
         self.ob = []
         self.portal = []
+        self.bush = []
         self.scrolling = False
         self.window_left = 0
         self.window_bottom = 0
@@ -93,6 +95,15 @@ class Map:
                 sb = clamp(self.ch, sb, self.ch * 2)
                 st = clamp(self.ch, st, self.ch * 2)
                 draw_rectangle(sl, sb, sr, st)
+                if len(self.bush) > 1:
+                    for o in self.bush:
+                        sl, sb = self.world_to_camera(o.left, o.bottom)
+                        sr, st = self.world_to_camera(o.right, o.top)
+                        sb += self.ch
+                        st += self.ch
+                        sb = clamp(self.ch, sb, self.ch * 2)
+                        st = clamp(self.ch, st, self.ch * 2)
+                        draw_rectangle(sl, sb, sr, st)
             for p in self.portal:
                 draw_rectangle(*p.get_bb())
         else:
@@ -106,6 +117,12 @@ class Map:
         self.window_bottom = clamp(0, int(gameWorld.get_player().y - self.ch // 2), self.h - self.ch - 1)
 
     def handle_event(self, e):
+        if (SDL_KEYDOWN, SDLK_SPACE) == (e.type, e.key):
+            b = bush.Bush(gameWorld.get_player().x, gameWorld.get_player().y)
+            gameWorld.addObject(b, 0)
+            gameWorld.add_collision_pair('player:bush', None, b)
+            self.bush.append(b)
+
         if e.button == SDL_BUTTON_LEFT:
             if e.type == SDL_MOUSEBUTTONDOWN:
                 if self.scrolling:
@@ -162,6 +179,8 @@ class Map:
     def save_map(self):
         with open('road.pkl', 'wb') as file:
             pickle.dump(self.ob, file)
+        with open('road_bush.pkl', 'wb') as file:
+            pickle.dump(self.bush, file)
 
     def camera_to_world(self, _x, _y):
         # 카메라 좌표 전달
@@ -239,6 +258,14 @@ def init_road():
         m.ob.append(o)
         gameWorld.addObject(o, 0)
         gameWorld.add_collision_pair('player:obstacle', None, o)
+
+    with open(f'road_bush.pkl', 'rb') as file:
+        loaded_data = pickle.load(file)
+
+    for o in loaded_data:
+        m.bush.append(o)
+        gameWorld.addObject(o, 0)
+        gameWorld.add_collision_pair('player:bush', None, o)
 
     return m
 

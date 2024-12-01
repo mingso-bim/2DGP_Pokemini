@@ -4,10 +4,10 @@ import random
 
 
 class Bush:
-    def __init__(self):
+    def __init__(self, x, y):
         self.pokemons = []
         self.pokemons.append(random.randint(0, 7))
-        self.x, self.y = 0, 0
+        self.x, self.y = x, y
         self.battle = False
 
     def render(self):
