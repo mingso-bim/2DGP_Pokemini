@@ -6,9 +6,13 @@ import random
 class Bush:
     def __init__(self, x, y):
         self.pokemons = []
-        self.pokemons.append(random.randint(0, 7))
+        self.pokemons.append(pokemon.pokemons[random.randint(0, 7)])
         self.x, self.y = x, y
-        self.battle = False
+        self.battle = True
+        # 불러올때 모든 부시 False로 바꾸기 필요
+
+    def update(self):
+        pass
 
     def render(self):
         draw_rectangle(*self.get_bb())

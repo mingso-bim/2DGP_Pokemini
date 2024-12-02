@@ -66,12 +66,13 @@ def handle_events():
             gameWorld.get_player().scrolling = True
             print('scr')
         elif e.type == SDL_KEYDOWN or e.type == SDL_KEYUP:
+            if e.key == SDLK_SPACE:
+                gameWorld.get_map().handle_event(e)
+                return
             p.handle_events(e)
         elif e.type in (SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP):
             gameWorld.get_map().handle_event(e)
             print('mouse clicked')
-        elif (SDL_KEYDOWN, SDLK_SPACE) == (e.type, e.key):
-            gameWorld.get_map().handle_event(e)
 
 
 def pause(): pass

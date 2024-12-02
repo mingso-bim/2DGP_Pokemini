@@ -97,8 +97,7 @@ class Map:
                 draw_rectangle(sl, sb, sr, st)
                 if len(self.bush) > 1:
                     for o in self.bush:
-                        sl, sb = self.world_to_camera(o.left, o.bottom)
-                        sr, st = self.world_to_camera(o.right, o.top)
+                        sl, sb, sr, st = o.get_bb()
                         sb += self.ch
                         st += self.ch
                         sb = clamp(self.ch, sb, self.ch * 2)
@@ -122,6 +121,7 @@ class Map:
             gameWorld.addObject(b, 0)
             gameWorld.add_collision_pair('player:bush', None, b)
             self.bush.append(b)
+            print('bush added')
 
         if e.button == SDL_BUTTON_LEFT:
             if e.type == SDL_MOUSEBUTTONDOWN:
@@ -263,6 +263,7 @@ def init_road():
         loaded_data = pickle.load(file)
 
     for o in loaded_data:
+        o.battle = False
         m.bush.append(o)
         gameWorld.addObject(o, 0)
         gameWorld.add_collision_pair('player:bush', None, o)
