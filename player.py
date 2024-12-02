@@ -17,7 +17,7 @@ class Player:
         self.gender = None
         self.image = None
         self.width, self.height = 0, 0
-        self.frame = 1
+        self.frame = 0
         self.x, self.y = 450, 500
         self.prevX, self.prevY = 200, 200
         self.dirX, self.dirY, self.dir = 1, 1, 0

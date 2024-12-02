@@ -5,6 +5,7 @@ import game_framework
 from gameWorld import game_width, game_height
 import play_mode
 import pokemon
+import effect
 
 
 class Pokeball:
@@ -39,7 +40,7 @@ def renderPokeballs():
 
 
 def init():
-    global pokeballs
+    global pokeballs, background, touchpad
     pokeballs = [Pokeball('turtwig'), Pokeball('piplup'), Pokeball('chimchar')]
 
     background = map.Map()
@@ -49,7 +50,9 @@ def init():
     gameWorld.addObject(touchpad, 0)
 
 def finish():
-    gameWorld.clear()
+    global background, touchpad
+    gameWorld.removeObject(background)
+    gameWorld.removeObject(touchpad)
 
 def update():
     gameWorld.update()
@@ -77,6 +80,7 @@ def handle_events():
             for p in pokemon.pokemons:
                 if p.name == pokeballs[1].name:
                     gameWorld.p.addPokemon(p)
+            effect.b_fade_out()
             game_framework.pop_mode()
 
 

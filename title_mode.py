@@ -8,7 +8,7 @@ def init():
     global select
     select = 0
 
-    global main_background, main_logo, main_menu, newText, continueText, arrow
+    global main_background, main_logo, main_menu, newText, continueText, arrow, sound_button
     # background
     main_background = UI(game_width / 2, game_height / 2, game_width, game_height)
     main_background.image = load_image('resource/background.png')
@@ -28,6 +28,10 @@ def init():
     # arrow
     arrow = UI(game_width * 0.35, game_height * 0.275, 12, 20)
     arrow.image = load_image('resource/intro/select.png')
+
+    # sound_button
+    sound_button = load_wav('resource/sound/button.wav')
+    sound_button.set_volume(32)
 
 def finish():
     global main_background, main_logo, main_menu, newText, continueText, arrow
@@ -58,10 +62,12 @@ def draw():
     update_canvas()
 
 def handle_events():
-    global select
+    global select, sound_button
 
     events = get_events()
     for e in events:
+        if e.type == SDL_KEYDOWN:
+            sound_button.play()
         if e.type == SDL_KEYDOWN and e.key == SDLK_ESCAPE:
             game_framework.quit()
         elif e.type == SDL_KEYDOWN:

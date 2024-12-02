@@ -120,6 +120,8 @@ class Map:
                 draw_rectangle(*p.get_bb())
 
     def update(self):
+        if gameWorld.get_player() == None:
+            return
         self.window_left = clamp(0, int(gameWorld.get_player().x - self.cw // 2), self.w - self.cw - 1)
         self.window_bottom = clamp(0, int(gameWorld.get_player().y - self.ch // 2), self.h - self.ch - 1)
 
