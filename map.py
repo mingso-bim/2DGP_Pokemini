@@ -37,18 +37,23 @@ class Portal:
         self.x = x
         self.y = y
         self.target = target
-        self.move = True
+        self.move = False
+        self.parent = None
+        self.tx, self.ty = 0, 0
 
     def get_bb(self):
         return self.x - 30, self.y - 10, self.x + 30, self.y + 10
 
     def handle_collision(self, group, other):
-        if self.move:
+        if gameWorld.get_map().type != self.parent.type:
             return
-        # 입장할 때 포탈 켜기
+
+        other.x, other.y = self.tx, self.ty
+
         m = None
         if self.target == 'house':
             m = init_house()
+            other.scrolling = False
         elif self.target == 'village':
             m = init_village()
             other.scrolling = True
@@ -58,6 +63,8 @@ class Portal:
 
         gameWorld.world[0][0] = m
         self.move = True
+        self.parent.remove()
+
 
     def render(self):
         pass
@@ -79,6 +86,7 @@ class Map:
         self.window_left = 0
         self.window_bottom = 0
         self.sx, self.sy = 0, 0
+        self.type = None
 
     def render(self):
         self.image.clip_draw_to_origin(
@@ -95,16 +103,16 @@ class Map:
                 sb = clamp(self.ch, sb, self.ch * 2)
                 st = clamp(self.ch, st, self.ch * 2)
                 draw_rectangle(sl, sb, sr, st)
-                if len(self.bush) > 1:
-                    for o in self.bush:
-                        sl, sb, sr, st = o.get_bb()
-                        sb += self.ch
-                        st += self.ch
-                        sb = clamp(self.ch, sb, self.ch * 2)
-                        st = clamp(self.ch, st, self.ch * 2)
-                        draw_rectangle(sl, sb, sr, st)
+
             for p in self.portal:
-                draw_rectangle(*p.get_bb())
+                sl, sb, sr, st = p.get_bb()
+                sl, sb = self.world_to_camera(sl, sb)
+                sr, st = self.world_to_camera(sr, st)
+                sb += self.ch
+                st += self.ch
+                sb = clamp(self.ch, sb, self.ch * 2)
+                st = clamp(self.ch, st, self.ch * 2)
+                draw_rectangle(sl, sb, sr, st)
         else:
             for o in self.ob:
                 draw_rectangle(*o.get_bb())
@@ -177,10 +185,18 @@ class Map:
                                 self.ob.remove(o)
 
     def save_map(self):
-        with open('road.pkl', 'wb') as file:
+        file_name = ''
+        if self.type == 'house':
+            file_name = 'house.pkl'
+        elif self.type == 'village':
+            file_name = 'village.pkl'
+        elif self.type == 'road':
+            file_name = 'road.pkl'
+            with open('road_bush.pkl', 'wb') as file:
+                pickle.dump(self.bush, file)
+
+        with open(file_name, 'wb') as file:
             pickle.dump(self.ob, file)
-        with open('road_bush.pkl', 'wb') as file:
-            pickle.dump(self.bush, file)
 
     def camera_to_world(self, _x, _y):
         # 카메라 좌표 전달
@@ -200,6 +216,9 @@ class Map:
             gameWorld.removeObject(o)
         for p in self.portal:
             gameWorld.removeObject(p)
+        if bush:
+            for b in self.bush:
+                gameWorld.removeObject(b)
         gameWorld.removeObject(self)
 
 
@@ -208,6 +227,7 @@ def init_house():
     m = Map()
     m.image = load_image('resource/map/house.png')
     m.w, m.h = m.image.w, m.image.h
+    m.type = 'house'
 
     # ob 생성
     with open('house.pkl', 'rb') as file:
@@ -220,9 +240,10 @@ def init_house():
 
     # portal 생성
     p = Portal(300, 410, 'village')
+    p.tx, p.ty = 330, 320
     m.portal.append(p)
     gameWorld.add_collision_pair('player:portal', None, p)
-
+    p.parent = m
     return m
 
 
@@ -232,6 +253,7 @@ def init_village():
     m.image = load_image('resource/map/map_village.png')
     m.w, m.h = m.image.w, m.image.h
     m.scrolling = True
+    m.type = 'village'
 
     with open(f'village.pkl', 'rb') as file:
         loaded_data = pickle.load(file)
@@ -240,6 +262,18 @@ def init_village():
         m.ob.append(o)
         gameWorld.addObject(o, 0)
         gameWorld.add_collision_pair('player:obstacle', None, o)
+
+    p = Portal(330, 360, 'house')
+    p.tx, p.ty = 300, 450
+    m.portal.append(p)
+    gameWorld.add_collision_pair('player:portal', None, p)
+    p.parent = m
+
+    pp = Portal(510, 940, 'road')
+    pp.tx, pp.ty = 2030, 480
+    m.portal.append(pp)
+    gameWorld.add_collision_pair('player:portal', None, pp)
+    pp.parent = m
 
     return m
 
@@ -250,6 +284,7 @@ def init_road():
     m.image = load_image('resource/map/map_road.png')
     m.w, m.h = m.image.w, m.image.h
     m.scrolling = True
+    m.type = 'road'
 
     with open(f'road.pkl', 'rb') as file:
         loaded_data = pickle.load(file)
@@ -267,6 +302,12 @@ def init_road():
         m.bush.append(o)
         gameWorld.addObject(o, 0)
         gameWorld.add_collision_pair('player:bush', None, o)
+
+    p = Portal(2090, 480, 'village')
+    p.tx, p.ty = 510, 900
+    m.portal.append(p)
+    gameWorld.add_collision_pair('player:portal', None, p)
+    p.parent = m
 
     return m
 
