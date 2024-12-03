@@ -38,6 +38,8 @@ TACKLE = Skill('몸통박치기', 40, 100, Type.NORMAL, 35, Status.NONE)
 QUICK_ATTACK = Skill('전광석화', 40, 100, Type.NORMAL, 30, Status.NONE)
 #풀베기
 CUTTING_GRASS = Skill('풀베기', 50, 95, Type.NORMAL, 30, Status.NONE)
+#버둥거리기
+STRUGGLING = Skill('버둥거리기', 30, 90, Type.NORMAL, 0, Status.NONE)
 
 # TYPE WATER
 #물대포

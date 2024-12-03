@@ -1,7 +1,5 @@
 from random import randint
 import gameWorld
-from game_framework import change_mode, pop_mode
-from stateMachine import StateMachine
 from pico2d import *
 import game_framework
 from battle_state import *
@@ -68,6 +66,8 @@ class Battle:
         self.cur_script = self.script_q.get()
         self.turn = 'player'
 
+        self.player_attacked = False
+
         self.ending_script = [self.p_pokemon.name + '은(는) 쓰러졌다!', self.cur_script == self.o_pokemon.name + '은(는) 쓰러졌다!',
                               self.p_pokemon.name + '은(는) ' + str(self.o_pokemon.drop_exp) + '경험치를 얻었다!']
 
@@ -89,9 +89,15 @@ class Battle:
             return
 
         elif self.turn == 'player':
-            self.put_player_script()
+            if self.player_attacked:
+                self.turn = 'other'
+            else:
+                self.put_player_script()
+
         elif self.turn == 'other':
             self.other_attack()
+            self.player_attacked = False
+
 
         if self.cur_script == self.p_pokemon.name + '은(는) 무엇을 할까?':
             self.input_enable = True
@@ -106,14 +112,15 @@ class Battle:
 
     def attack(self, caster, subject, skill):
         self.input_enable = False
-        self.turn = 'other'
         Battle.sound_attack.play()
+
+        if caster == self.p_pokemon:
+            self.player_attacked = True
 
         if caster.status_turn == 2:
             caster.status = Status.NONE
             caster.status_turn = 0
 
-        print(caster.status)
         if caster.status == Status.POISON:
             s = caster.name + '은(는) 독에 의한 데미지를 입었다!'
             caster.cur_hp -= int(caster.max_hp * 0.1)
@@ -146,7 +153,7 @@ class Battle:
 
         skill = caster.skill[skill]
         if skill.pp > caster.cur_pp:
-            return
+            skill = skill.STRUGGLING
 
         s = caster.name + '의 ' + skill.name + '!'
         self.script_q.put(s)
@@ -178,10 +185,9 @@ class Battle:
             efficient = 0.1
 
         if skill.type == caster.type:
-            efficient *= 1.5
-        print(efficient)
-            
-        subject.cur_hp -= int(skill.attack * efficient)
+            efficient *= 1.2
+
+        subject.cur_hp -= int(skill.attack * efficient) + caster.level * 2
 
         if subject.cur_hp < 0:
             s = subject.name + '은(는) 쓰러졌다!'
@@ -220,8 +226,12 @@ class Battle:
     def handle_input(self, e):
         if e.type == SDL_KEYDOWN:
             Battle.sound_button.play()
+
         if self.turn == 'end':
+            self.p_pokemon.cur_pp = self.p_pokemon.max_pp
+            self.music.stop()
             game_framework.pop_mode()
+
         if self.input_enable == False:
             if e.key == SDLK_SPACE:
                 self.cur_script = self.script_q.get()
@@ -236,8 +246,8 @@ class Battle:
                 self.select_skill(e)
 
 
-
     def render(self):
+        print(self.turn)
         pp = 0
         if self.select_mode == 'main':
             Battle.touchpad.clip_draw(0, 783 - 202, 255, 202, gameWorld.game_width/2, gameWorld.game_height * 0.27, gameWorld.game_width, gameWorld.game_height * 0.55)
@@ -465,6 +475,7 @@ def init():
 
 def finish():
     gameWorld.p.visible = True
+    battle.music.stop()
     gameWorld.removeObject(battle)
 
 def update():
