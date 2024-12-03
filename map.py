@@ -5,7 +5,6 @@ import bush
 
 game_width = 600
 game_height = 700
-#map = gameWorld.world[0][0]
 
 startX, startY = 0, 0
 
@@ -20,7 +19,8 @@ class Obstacle:
         return self.left, self.bottom, self.right, self.top
 
     def handle_collision(self, group, other):
-        pass
+        if group == 'player:obstacle':
+            print(self)
 
     def render(self):
         pass
@@ -37,7 +37,6 @@ class Portal:
         self.x = x
         self.y = y
         self.target = target
-        self.move = False
         self.parent = None
         self.tx, self.ty = 0, 0
 
@@ -45,9 +44,6 @@ class Portal:
         return self.x - 30, self.y - 10, self.x + 30, self.y + 10
 
     def handle_collision(self, group, other):
-        if gameWorld.get_map().type != self.parent.type:
-            return
-
         other.x, other.y = self.tx, self.ty
 
         m = None
@@ -62,8 +58,6 @@ class Portal:
             other.scrolling = True
 
         gameWorld.world[0][0] = m
-        self.move = True
-        self.parent.remove()
 
 
     def render(self):
@@ -87,6 +81,7 @@ class Map:
         self.window_bottom = 0
         self.sx, self.sy = 0, 0
         self.type = None
+        self.music = None
 
     def render(self):
         self.image.clip_draw_to_origin(
@@ -225,6 +220,15 @@ class Map:
 
 
 def init_house():
+    if len(gameWorld.world) > 1 and len(gameWorld.world[0]) > 0:
+        if type(gameWorld.get_map()) == Map:
+            gameWorld.get_map().remove()
+
+    for layer in gameWorld.world:
+        for o in layer:
+            if type(o) == Obstacle:
+                gameWorld.removeObject(o)
+
     global house
     m = Map()
     m.image = load_image('resource/map/house.png')
@@ -240,6 +244,11 @@ def init_house():
         gameWorld.addObject(o, 0)
         gameWorld.add_collision_pair('player:obstacle', None, o)
 
+    # music 설정
+    m.music = load_music('resource/sound/music_village.mp3')
+    m.music.set_volume(32)
+    m.music.repeat_play()
+
     # portal 생성
     p = Portal(300, 410, 'village')
     p.tx, p.ty = 330, 320
@@ -250,6 +259,15 @@ def init_house():
 
 
 def init_village():
+    if len(gameWorld.world) > 1 and len(gameWorld.world[0]) > 0:
+        if type(gameWorld.get_map()) == Map:
+            gameWorld.get_map().remove()
+
+    for layer in gameWorld.world:
+        for o in layer:
+            if type(o) == Obstacle:
+                gameWorld.removeObject(o)
+
     global village
     m = Map()
     m.image = load_image('resource/map/map_village.png')
@@ -271,6 +289,10 @@ def init_village():
     gameWorld.add_collision_pair('player:portal', None, p)
     p.parent = m
 
+    m.music = load_music('resource/sound/music_village.mp3')
+    m.music.set_volume(32)
+    m.music.repeat_play()
+
     pp = Portal(510, 940, 'road')
     pp.tx, pp.ty = 2030, 480
     m.portal.append(pp)
@@ -281,6 +303,15 @@ def init_village():
 
 
 def init_road():
+    if len(gameWorld.world) > 1 and len(gameWorld.world[0]) > 0:
+        if type(gameWorld.get_map()) == Map:
+            gameWorld.get_map().remove()
+
+    for layer in gameWorld.world:
+        for o in layer:
+            if type(o) == Obstacle:
+                gameWorld.removeObject(o)
+
     global road
     m = Map()
     m.image = load_image('resource/map/map_road.png')
@@ -304,6 +335,10 @@ def init_road():
         m.bush.append(o)
         gameWorld.addObject(o, 0)
         gameWorld.add_collision_pair('player:bush', None, o)
+
+    m.music = load_music('resource/sound/music_road.mp3')
+    m.music.set_volume(32)
+    m.music.repeat_play()
 
     p = Portal(2090, 480, 'village')
     p.tx, p.ty = 510, 900

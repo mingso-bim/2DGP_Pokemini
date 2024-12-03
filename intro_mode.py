@@ -20,6 +20,7 @@ class Intro:
     arrow = None
     smallPlayer = None
     sound_button = None
+    music = None
 
     def __init__(self):
         self.phase = 0
@@ -31,6 +32,7 @@ class Intro:
         self.playerX = 0
         self.playerFrame = 0
         self.textboxLoc = [game_width / 2, game_height * 0.38]
+        self.selected = False
 
         if Intro.font == None:
             Intro.font = load_font('resource/font.ttf', 55)
@@ -51,6 +53,10 @@ class Intro:
         if Intro.sound_button == None:
             Intro.sound_button = load_wav('resource/sound/button.wav')
             Intro.sound_button.set_volume(32)
+        if Intro.music == None:
+            Intro.music = load_music('resource/sound/music_intro.mp3')
+            Intro.music.repeat_play()
+            Intro.music.set_volume(32)
 
         self.script = ('흐음!!', '잘 왔다!', '포켓몬스터의 세계에 온 것을', '환영한다!',
                   '내 이름은 마박사!', '모두가 포켓몬 박사님이라고', '부르고 있단다.', '이 세계에는',
@@ -152,6 +158,8 @@ class Intro:
         if self.scriptIdx == 21:
             Intro.font.draw(self.textboxLoc[0] - game_width * 0.4, game_height * 0.42,
                       self.player.name + self.script[self.scriptIdx])
+        elif self.scriptIdx == 24 and self.selected == False:
+            pass
         else:
             Intro.font.draw(self.textboxLoc[0] - game_width * 0.4, game_height * 0.42, self.script[self.scriptIdx])
 
@@ -166,6 +174,7 @@ class Intro:
         if self.scriptIdx == 24:
             effect.b_fade_out()
             game_framework.push_mode(startPokemonEvent_mode)
+            self.selected = True
 
     def handle_events(self, e):
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_ESCAPE):

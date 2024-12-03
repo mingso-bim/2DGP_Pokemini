@@ -17,6 +17,10 @@ class Battle:
     background = None
     font = None
     textbox = None
+    music = None
+    sound_button = None
+    sound_attack = None
+    sound_win = None
     meet_script = ('앗! 야생의 ', '(이)가 나타났다!', '가랏! ', '!')
     attack_script = ('의 ', '!')
     counter_script = ('효과가 굉장했다!', '효과가 별로인 듯 하다')
@@ -36,6 +40,19 @@ class Battle:
             Battle.font = load_font('resource/font.ttf', 40)
         if Battle.textbox == None:
             Battle.textbox = load_image('resource/textbox.png')
+        if Battle.music == None:
+            Battle.music = load_music('resource/sound/music_battle.mp3')
+            Battle.music.set_volume(32)
+            Battle.music.repeat_play()
+        if Battle.sound_button == None:
+            Battle.sound_button = load_wav('resource/sound/button.wav')
+            Battle.sound_button.set_volume(32)
+        if Battle.sound_attack == None:
+            Battle.sound_attack = load_wav('resource/sound/attack.wav')
+            Battle.sound_attack.set_volume(32)
+        if Battle.sound_win == None:
+            Battle.sound_win = load_wav('resource/sound/battle_win.wav')
+            Battle.sound_win.set_volume(32)
 
         self.select = 0
         self.select_mode = 'main'
@@ -90,6 +107,7 @@ class Battle:
     def attack(self, caster, subject, skill):
         self.input_enable = False
         self.turn = 'other'
+        Battle.sound_attack.play()
 
         if caster.status_turn == 2:
             caster.status = Status.NONE
@@ -200,6 +218,8 @@ class Battle:
 
 
     def handle_input(self, e):
+        if e.type == SDL_KEYDOWN:
+            Battle.sound_button.play()
         if self.turn == 'end':
             game_framework.pop_mode()
         if self.input_enable == False:

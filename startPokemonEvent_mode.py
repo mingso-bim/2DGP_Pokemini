@@ -40,7 +40,7 @@ def renderPokeballs():
 
 
 def init():
-    global pokeballs, background, touchpad
+    global pokeballs, background, touchpad, sound_button
     pokeballs = [Pokeball('turtwig'), Pokeball('piplup'), Pokeball('chimchar')]
 
     background = map.Map()
@@ -48,6 +48,8 @@ def init():
     gameWorld.addObject(background, 0)
     touchpad = map.TouchPad()
     gameWorld.addObject(touchpad, 0)
+    sound_button = load_wav('resource/sound/button.wav')
+    sound_button.set_volume(32)
 
 def finish():
     global background, touchpad
@@ -65,9 +67,11 @@ def draw():
     update_canvas()
 
 def handle_events():
-    global pokeballs
+    global pokeballs, sound_button
     events = get_events()
     for e in events:
+        if e.type == SDL_KEYDOWN:
+            sound_button.play()
         if (SDL_KEYDOWN, SDLK_ESCAPE) == (e.type, e.key):
             game_framework.quit()
         elif (SDL_KEYDOWN, SDLK_LEFT) == (e.type, e.key):

@@ -33,6 +33,11 @@ def init():
     sound_button = load_wav('resource/sound/button.wav')
     sound_button.set_volume(32)
 
+    # music
+    music = load_music('resource/sound/music_title.mp3')
+    music.repeat_play()
+    music.set_volume(32)
+
 def finish():
     global main_background, main_logo, main_menu, newText, continueText, arrow
     del main_background, main_logo, main_menu, newText, continueText, arrow
