@@ -41,7 +41,6 @@ class Battle:
         if Battle.music == None:
             Battle.music = load_music('resource/sound/music_battle.mp3')
             Battle.music.set_volume(32)
-            Battle.music.repeat_play()
         if Battle.sound_button == None:
             Battle.sound_button = load_wav('resource/sound/button.wav')
             Battle.sound_button.set_volume(32)
@@ -471,11 +470,13 @@ class Battle:
 def init():
     global battle
     battle = Battle()
+    Battle.music.repeat_play()
     gameWorld.addObject(battle, 0)
 
 def finish():
-    gameWorld.p.visible = True
+    gameWorld.get_player().visible = True
     battle.music.stop()
+    gameWorld.get_map().music.play()
     gameWorld.removeObject(battle)
 
 def update():
