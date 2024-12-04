@@ -1,3 +1,5 @@
+import time
+
 from pico2d import *
 
 import battle_mode
@@ -11,7 +13,9 @@ RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
+
 class Player:
+    heal_sound = None
     def __init__(self):
         self.name = "player"
         self.gender = None
@@ -24,8 +28,10 @@ class Player:
         self.scrolling = False
         self.speed = RUN_SPEED_PPS
         self.visible = True
+        self.moveable = True
         self.pokemons = []
         self.items = []
+        self.start_time = 0
         self.stateMachine = StateMachine(self)
         self.stateMachine.start(Idle)
         self.stateMachine.setTransitions(
@@ -59,13 +65,12 @@ class Player:
         self.height = 39
 
 
-    def setDebugMode(self):
-        self.setGender('female')
-        self.moveable = True
-
-
     def update(self):
         self.stateMachine.update()
+        if self.start_time != 0:
+            if time.time() - self.start_time > 2.7:
+                self.start_time = 0
+                self.moveable = True
 
 
     def render(self):
@@ -82,7 +87,35 @@ class Player:
 
 
     def handle_events(self, e):
+        if not self.moveable:
+            return
         self.stateMachine.addEvent(('INPUT', e))
+        if (e.type, e.key) == (SDL_KEYDOWN, SDLK_SPACE):
+            self.heal()
+
+
+    def heal(self):
+        if gameWorld.get_map().type == 'house':
+            if self.dir == 2:
+                al, ab, ar, at = 315-10, 551-10, 315+10, 551+10
+                bl, bb, br, bt = self.get_bb()
+
+                if al > br: return
+                if ar < bl: return
+                if at < bb: return
+                if ab > bt: return
+                print('heal')
+
+                for p in self.pokemons:
+                    p.cur_hp = p.max_hp
+
+                if Player.heal_sound == None:
+                    Player.heal_sound = load_wav('resource/sound/pokemon_center.wav')
+                    Player.heal_sound.set_volume(32)
+
+                Player.heal_sound.play()
+                self.start_time = time.time()
+                self.moveable = False
 
 
     def get_bb(self, locX = None, locY = None):

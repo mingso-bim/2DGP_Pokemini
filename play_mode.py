@@ -57,21 +57,11 @@ def handle_events():
         elif (SDL_KEYDOWN, SDLK_F1) == (e.type, e.key):
             gameWorld.get_map().save_map()
             print('saved')
-        elif (SDL_KEYDOWN, SDLK_F2) == (e.type, e.key):
-            gameWorld.get_player().scrolling = True
-            print('scr')
-        elif (SDL_KEYDOWN, SDLK_F3) == (e.type, e.key):
-            effect.b_blink()
-        elif (SDL_KEYDOWN, SDLK_F4) == (e.type, e.key):
-            effect.w_blink()
         elif e.type == SDL_KEYDOWN or e.type == SDL_KEYUP:
-            if e.key == SDLK_SPACE:
-                gameWorld.get_map().handle_event(e)
-                return
             p.handle_events(e)
         elif e.type in (SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP):
             gameWorld.get_map().handle_event(e)
-            print('mouse clicked')
+            print(f'   click{e.x}, {e.y}')
 
 
 def pause(): pass

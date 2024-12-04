@@ -48,7 +48,7 @@ class Battle:
             Battle.sound_attack = load_wav('resource/sound/attack.wav')
             Battle.sound_attack.set_volume(32)
         if Battle.sound_win == None:
-            Battle.sound_win = load_wav('resource/sound/battle_win.wav')
+            Battle.sound_win = load_music('resource/sound/battle_win.mp3')
             Battle.sound_win.set_volume(32)
 
         self.select = 0
@@ -102,7 +102,8 @@ class Battle:
             self.input_enable = True
         elif self.cur_script in self.ending_script :
             self.turn = 'end'
-
+            Battle.music.stop()
+            Battle.sound_win.repeat_play()
 
     def other_attack(self):
         idx = randint(0, len(self.o_pokemon.skill) - 1)
@@ -136,10 +137,11 @@ class Battle:
             self.script_q.put(s)
             return
 
-        if caster.cur_hp < 0:
+        if caster.cur_hp <= 0:
             s = caster.name + '은(는) 쓰러졌다!'
             self.script_q.put(s)
             if caster != self.p_pokemon:
+
                 s = self.p_pokemon.name + '은(는) ' + str(caster.drop_exp) + '경험치를 얻었다!'
                 s = self.p_pokemon.name + '은(는) ' + str(caster.drop_exp) + '경험치를 얻었다!'
                 self.p_pokemon.exp += caster.drop_exp
@@ -188,10 +190,11 @@ class Battle:
 
         subject.cur_hp -= int(skill.attack * efficient) + caster.level * 2
 
-        if subject.cur_hp < 0:
+        if subject.cur_hp <= 0:
             s = subject.name + '은(는) 쓰러졌다!'
             self.script_q.put(s)
             if caster == self.p_pokemon:
+
                 s = caster.name + '은(는) ' + str(subject.drop_exp) + '경험치를 얻었다!'
                 s = caster.name + '은(는) ' + str(subject.drop_exp) + '경험치를 얻었다!'
                 caster.exp += subject.drop_exp
@@ -230,6 +233,7 @@ class Battle:
             self.p_pokemon.cur_pp = self.p_pokemon.max_pp
             self.music.stop()
             game_framework.pop_mode()
+            return
 
         if self.input_enable == False:
             if e.key == SDLK_SPACE:
@@ -246,7 +250,7 @@ class Battle:
 
 
     def render(self):
-        print(self.turn)
+        print(self.turn, self.script_q.qsize())
         pp = 0
         if self.select_mode == 'main':
             Battle.touchpad.clip_draw(0, 783 - 202, 255, 202, gameWorld.game_width/2, gameWorld.game_height * 0.27, gameWorld.game_width, gameWorld.game_height * 0.55)
@@ -360,6 +364,9 @@ class Battle:
         Battle.UI.clip_draw(1 + 8 * self.p_pokemon.level, 1, 8, 7, gameWorld.game_width * 0.934, gameWorld.game_height * 0.725, 16, 14)
 
         #체력 바 render
+        if self.p_pokemon.cur_hp < 0:
+            self.p_pokemon.cur_hp = 0
+
         hp_percent = self.p_pokemon.cur_hp / self.p_pokemon.max_hp
         length = int(hp_percent * 48)
         if hp_percent > 0.5:
@@ -476,6 +483,7 @@ def init():
 def finish():
     gameWorld.get_player().visible = True
     battle.music.stop()
+    battle.sound_win.stop()
     gameWorld.get_map().music.play()
     gameWorld.removeObject(battle)
 
