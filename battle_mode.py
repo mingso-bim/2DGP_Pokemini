@@ -64,6 +64,7 @@ class Battle:
         self.put_meet_script()
         self.cur_script = self.script_q.get()
         self.turn = 'player'
+        self.playing = False
 
         self.player_attacked = False
 
@@ -102,8 +103,10 @@ class Battle:
             self.input_enable = True
         elif self.cur_script in self.ending_script :
             self.turn = 'end'
-            Battle.music.stop()
-            Battle.sound_win.repeat_play()
+            if self.playing == False:
+                Battle.music.stop()
+                Battle.sound_win.repeat_play()
+                self.playing = True
 
     def other_attack(self):
         idx = randint(0, len(self.o_pokemon.skill) - 1)
