@@ -73,8 +73,13 @@ class Battle:
 
 
     def put_meet_script(self):
-        s = '앗 야생의 ' + self.o_pokemon.name + '이(가) 나타났다!'
-        self.script_q.put(s)
+        if self.other.name:
+            s = '바람이 싸움을 걸어왔다!'
+            self.script_q.put(s)
+        else:
+            s = '앗 야생의 ' + self.o_pokemon.name + '이(가) 나타났다!'
+            self.script_q.put(s)
+
         s = '가랏! ' + self.p_pokemon.name + '!'
         self.script_q.put(s)
 
@@ -103,7 +108,7 @@ class Battle:
             self.input_enable = True
         elif self.cur_script in self.ending_script :
             self.turn = 'end'
-            if self.playing == False:
+            if self.playing == False and self.p_pokemon.cur_hp > 0:
                 Battle.music.stop()
                 Battle.sound_win.repeat_play()
                 self.playing = True
@@ -481,7 +486,7 @@ def init():
     global battle
     battle = Battle()
     Battle.music.repeat_play()
-    gameWorld.addObject(battle, 0)
+    gameWorld.addObject(battle, 1)
 
 def finish():
     gameWorld.get_player().visible = True

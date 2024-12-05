@@ -2,6 +2,7 @@ from pico2d import *
 import gameWorld
 import pickle
 import bush
+import trainer
 
 game_width = 600
 game_height = 700
@@ -82,6 +83,8 @@ class Map:
         self.sx, self.sy = 0, 0
         self.type = None
         self.music = None
+        self.touch_pad = TouchPad()
+        self.trainer = []
 
     def render(self):
         self.image.clip_draw_to_origin(
@@ -89,6 +92,24 @@ class Map:
             self.cw, self.ch,
             0, self.ch
         )
+
+        if self.trainer:
+            for t in self.trainer:
+                t.sx, t.sy = self.world_to_camera(t.x, t.y)
+                t.sy += self.ch
+                t.render()
+
+                tl, tb, tr, tt = t.get_bb()
+                sl, sb = self.world_to_camera(tl, tb)
+                sr, st = self.world_to_camera(tr, tt)
+                sb += self.ch
+                st += self.ch
+                sb = clamp(self.ch, sb, self.ch * 2)
+                st = clamp(self.ch, st, self.ch * 2)
+                draw_rectangle(sl, sb, sr, st)
+
+        self.touch_pad.render()
+
         if self.scrolling:
             for o in self.ob:
                 sl, sb = self.world_to_camera(o.left, o.bottom)
@@ -226,7 +247,7 @@ def init_house():
 
     for layer in gameWorld.world:
         for o in layer:
-            if type(o) == Obstacle:
+            if type(o) == Obstacle or type(o) == trainer.Trainer:
                 gameWorld.removeObject(o)
 
     global house
@@ -265,7 +286,7 @@ def init_village():
 
     for layer in gameWorld.world:
         for o in layer:
-            if type(o) == Obstacle:
+            if type(o) == Obstacle or type(o) == trainer.Trainer:
                 gameWorld.removeObject(o)
 
     global village
@@ -339,6 +360,13 @@ def init_road():
     m.music = load_music('resource/sound/music_road.mp3')
     m.music.set_volume(32)
     m.music.repeat_play()
+
+    t = trainer.Trainer()
+    m.trainer.append(t)
+    gameWorld.addObject(t, 0)
+    gameWorld.add_collision_pair('player:trainer', None, t)
+
+    gameWorld.addObject(m.touch_pad, 0)
 
     p = Portal(2090, 480, 'village')
     p.tx, p.ty = 510, 900

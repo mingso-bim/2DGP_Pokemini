@@ -133,16 +133,21 @@ class Player:
             pass
 
         elif group == 'player:trainer':
-            self.x = self.prevX
-            self.y = self.prevY
-            if other.battle:
+            if other.ending:
                 return
-            self.visible = False
-            self.stateMachine.start(Idle)
+
             self.frame = 0
+            self.stateMachine.start(Idle)
+
+            if self.pokemons[0].cur_hp <= 0:
+                self.x = self.prevX
+                self.y = self.prevY
+                return
+
+            self.visible = False
 
         elif group == 'player:bush':
-            if other.battle:
+            if not other.battle:
                 return
             self.visible = False
             self.stateMachine.start(Idle)

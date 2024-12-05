@@ -8,7 +8,7 @@ def init():
     global select
     select = 0
 
-    global main_background, main_logo, main_menu, newText, continueText, arrow, sound_button
+    global main_background, main_logo, main_menu, newText, continueText, arrow, sound_button, music
     # background
     main_background = UI(game_width / 2, game_height / 2, game_width, game_height)
     main_background.image = load_image('resource/background.png')
@@ -36,7 +36,7 @@ def init():
     # music
     music = load_music('resource/sound/music_title.mp3')
     music.repeat_play()
-    music.set_volume(32)
+    music.set_volume(100)
 
 def finish():
     global main_background, main_logo, main_menu, newText, continueText, arrow

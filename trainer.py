@@ -1,37 +1,39 @@
-from pico2d import draw_rectangle
+from pico2d import draw_rectangle, load_image
 import battle_mode
 import game_framework
+from pokemon import pokemons
+import ending_mode
 
 
 class Trainer:
     def __init__(self):
-        self.name = None
-        self.image = None
-        self.width, self.height = 0, 0
+        self.name = '바람'
+        self.image = load_image('resource/friend.png')
+        self.w, self.h = 29, 31
         self.frame = 0
-        self.x, self.y = 280, 500
-        self.dir = 1
-        self.battle = False
-        self.exp = 10
+        self.x, self.y = 560, 30
+        self.dir = 2
+        self.ending = False
         self.pokemons = []
-
-    def addPokemon(self, p):
-        self.pokemons.append(p)
+        self.pokemons.append(pokemons[7])
+        self.pokemons[0].level = 6
+        self.sx, self.sy = 0, 0
+        self.visible = True
 
     def get_bb(self):
-        return self.x - 20, self.y - 20, self.x + 20, self.y + 20
+        return self.x - 70, self.y - 20, self.x + 20, self.y + 20
 
     def render(self):
-        draw_rectangle(*self.get_bb())
+        if not self.visible:
+            return
+        self.image.clip_draw(self.frame * self.w, self.h * self.dir, self.w, self.h, self.sx, self.sy, self.w * 2, self.h * 2)
 
     def update(self):
         pass
 
     def handle_collision(self, group, other):
         if group == 'player:trainer':
-            if self.battle:
+            if self.ending:
                 return
-            battle_mode.other = self
-            game_framework.push_mode(battle_mode)
-            self.battle = True
-
+            ending_mode.trainer = self
+            game_framework.push_mode(ending_mode)
