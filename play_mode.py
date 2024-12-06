@@ -1,6 +1,5 @@
 from pico2d import *
 import game_framework
-from map import Obstacle, game_width
 import map
 import gameWorld
 import battle_mode
@@ -14,13 +13,9 @@ def init():
     global m
 
     p = gameWorld.p
-    p.x, p.y = 300, 450
-    p.x, p.y = 527, 127
-    p.scrolling = True
-
     gameWorld.addObject(p, 1)
 
-    m = map.init_road()
+    m = map.init_house()
     gameWorld.insertObject(m, 0)
 
     gameWorld.add_collision_pair('player:trainer', p, None)
@@ -36,7 +31,7 @@ def debugMode():
     p.pokemons[0].addSkill(skill.FIRE_FANG)
     p.pokemons[0].addSkill(skill.THUNDER)
     p.pokemons[0].exp = 15
-    #p.pokemons[0].cur_hp = 0
+    p.pokemons[0].cur_hp = 0
 
 def finish():
     gameWorld.clear()

@@ -1,7 +1,6 @@
 import time
-
 from pico2d import *
-
+import pickle
 import battle_mode
 from stateMachine import *
 from state import *
@@ -15,14 +14,13 @@ RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 
 class Player:
-    heal_sound = None
     def __init__(self):
         self.name = "player"
         self.gender = None
         self.image = None
         self.width, self.height = 0, 0
         self.frame = 0
-        self.x, self.y = 450, 500
+        self.x, self.y = 300, 450
         self.prevX, self.prevY = 200, 200
         self.dirX, self.dirY, self.dir = 1, 1, 0
         self.scrolling = False
@@ -34,6 +32,7 @@ class Player:
         self.start_time = 0
         self.stateMachine = StateMachine(self)
         self.stateMachine.start(Idle)
+        self.heal_sound = None
         self.stateMachine.setTransitions(
             {
                 Idle: {right_down: RunRight, left_down: RunLeft, left_up: RunRight, right_up: RunLeft,
@@ -52,6 +51,7 @@ class Player:
                 RunRightDown: {right_up: RunDown, downkey_up: RunRight, left_down: RunDown, upkey_down: RunRight}
             }
         )
+
     def addPokemon(self, p):
         self.pokemons.append(p)
 
@@ -85,7 +85,6 @@ class Player:
         else:
             draw_rectangle(*self.get_bb())
 
-
     def handle_events(self, e):
         if not self.moveable:
             return
@@ -93,29 +92,54 @@ class Player:
         if (e.type, e.key) == (SDL_KEYDOWN, SDLK_SPACE):
             self.heal()
 
+    def save(self):
+        data = Data(self.name, self.gender)
+        data.pokemons = self.pokemons
+
+        with open('player.pkl', 'wb') as file:
+            pickle.dump(data, file)
+            print('saved')
+
+    def load(self):
+        with open('player.pkl', 'rb') as file:
+            data = pickle.load(file)  # 저장된 객체를 읽어옴
+            self.name = data.name
+            self.gender = data.gender
+            self.pokemons = data.pokemons
+            if self.gender == "male":
+                self.image = load_image("resource/trainer_boy_sprite.png")
+            elif self.gender == 'female':
+                self.image = load_image("resource/trainer_girl_sprite.png")
+            print(f'loaded: {self.name}, {self.gender}, {self.pokemons}')
 
     def heal(self):
-        if gameWorld.get_map().type == 'house':
-            if self.dir == 2:
-                al, ab, ar, at = 315-10, 551-10, 315+10, 551+10
-                bl, bb, br, bt = self.get_bb()
+        if gameWorld.get_map().type != 'house':
+            return
+        if self.dir != 2:
+            return
 
-                if al > br: return
-                if ar < bl: return
-                if at < bb: return
-                if ab > bt: return
-                print('heal')
+        al, ab, ar, at = 315 - 10, 551 - 10, 315 + 10, 551 + 10
+        bl, bb, br, bt = self.get_bb()
 
-                for p in self.pokemons:
-                    p.cur_hp = p.max_hp
+        if al > br: return
+        if ar < bl: return
+        if at < bb: return
+        if ab > bt: return
+        print('heal')
 
-                if Player.heal_sound == None:
-                    Player.heal_sound = load_wav('resource/sound/pokemon_center.wav')
-                    Player.heal_sound.set_volume(32)
+        for p in self.pokemons:
+            p.cur_hp = p.max_hp
+            p.cur_pp = p.max_pp
 
-                Player.heal_sound.play()
-                self.start_time = time.time()
-                self.moveable = False
+        if self.heal_sound == None:
+            self.heal_sound = load_wav('resource/sound/pokemon_center.wav')
+            self.heal_sound.set_volume(32)
+
+        self.heal_sound.play()
+        self.start_time = time.time()
+        self.moveable = False
+
+        self.save()
 
 
     def get_bb(self, locX = None, locY = None):
@@ -159,3 +183,8 @@ class Player:
 
 
 
+class Data:
+    def __init__(self, _name, _gender):
+        self.name = _name
+        self.gender = _gender
+        self.pokemons = []

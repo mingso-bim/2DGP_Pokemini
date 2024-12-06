@@ -1,8 +1,10 @@
 from pico2d import *
+
+import gameWorld
 import game_framework
 from gameWorld import game_height, game_width
 from UI import UI, Text
-import intro_mode
+import intro_mode, play_mode
 
 def init():
     global select
@@ -84,6 +86,10 @@ def handle_events():
             elif select == 1:
                 if e.key == SDLK_UP:
                     select = 0
+                if e.key == SDLK_SPACE:
+                    game_framework.change_mode(play_mode)
+                    gameWorld.get_player().load()
+
 
 
 def pause(): pass
