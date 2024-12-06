@@ -148,7 +148,7 @@ class Intro:
                 Intro.background.draw(game_width / 2, game_height / 2, game_width, game_height)
                 self.phase9Render(self.playerFrame)
                 Intro.textbox.draw(self.textboxLoc[0], self.textboxLoc[1], game_width * 0.95, game_height * 0.18)
-                Intro.font.draw(self.textboxLoc[0] - game_width * 0.42, self.textboxLoc[0], self.script[self.scriptIdx])
+                Intro.font.draw(self.textboxLoc[0] - game_width * 0.4, game_height * 0.42, self.script[self.scriptIdx])
                 self.playerFrame += 1
                 delay(0.4)
                 update_canvas()

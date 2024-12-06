@@ -20,7 +20,7 @@ class Player:
         self.image = None
         self.width, self.height = 0, 0
         self.frame = 0
-        self.x, self.y = 300, 450
+        self.x, self.y = 300, 480
         self.prevX, self.prevY = 200, 200
         self.dirX, self.dirY, self.dir = 1, 1, 0
         self.scrolling = False
