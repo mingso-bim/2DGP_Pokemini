@@ -15,11 +15,11 @@ class Pokeball:
         self.name = p
 
     def draw(self, x, y):
-        if self.name == 'turtwig':
+        if self.name == 'TURTWIG':
             self.pokemon.clip_draw(1, 460 - 114, 80, 80, x, y, 160, 160)
-        elif self.name == 'piplup':
+        elif self.name == 'PIPLUP':
             self.pokemon.clip_draw(245, 460 - 114, 80, 80, x, y, 160, 160)
-        elif self.name == 'chimchar':
+        elif self.name == 'CHIMCHAR':
             self.pokemon.clip_draw(1, 460 - 344, 80, 80, x, y, 160, 160)
 
 
@@ -41,7 +41,7 @@ def renderPokeballs():
 
 def init():
     global pokeballs, background, touchpad, sound_button
-    pokeballs = [Pokeball('turtwig'), Pokeball('piplup'), Pokeball('chimchar')]
+    pokeballs = [Pokeball('TURTWIG'), Pokeball('PIPLUP'), Pokeball('CHIMCHAR')]
 
     background = map.Map()
     background.image = load_image('resource/intro/intro_background.png')
@@ -81,9 +81,13 @@ def handle_events():
             delay(0.1)
             pokeballs[0], pokeballs[1], pokeballs[2] = pokeballs[2], pokeballs[0], pokeballs[1]
         elif (SDL_KEYDOWN, SDLK_SPACE) == (e.type, e.key):
-            for p in pokemon.pokemons:
-                if p.name == pokeballs[1].name:
-                    gameWorld.p.addPokemon(p)
+            if pokeballs[1].name == 'TURTWIG':
+                gameWorld.p.addPokemon(pokemon.TURTWIG)
+            elif pokeballs[1].name == 'PIPLUP':
+                gameWorld.p.addPokemon(pokemon.PIPLUP)
+            elif pokeballs[1].name == 'CHIMCHAR':
+                gameWorld.p.addPokemon(pokemon.CHIMCHAR)
+
             effect.b_fade_out()
             game_framework.pop_mode()
 

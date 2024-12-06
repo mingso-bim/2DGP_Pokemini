@@ -14,11 +14,13 @@ RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 
 class Player:
+    image_girl = None
+    image_boy = None
     def __init__(self):
         self.name = "player"
         self.gender = None
         self.image = None
-        self.width, self.height = 0, 0
+        self.width, self.height = 35, 39
         self.frame = 0
         self.x, self.y = 280, 500
         self.prevX, self.prevY = 200, 200
@@ -53,18 +55,16 @@ class Player:
             }
         )
 
+
     def addPokemon(self, p):
         self.pokemons.append(p)
 
     def setGender(self, _gender):
         self.gender = _gender
-        if _gender == "male":
-            self.image = load_image("resource/trainer_boy_sprite.png")
+        if _gender == 'male':
+            self.image = Player.image_boy
         elif _gender == 'female':
-            self.image = load_image("resource/trainer_girl_sprite.png")
-        self.width = 35
-        self.height = 39
-
+            self.image = Player.image_girl
 
     def update(self):
         self.stateMachine.update()
@@ -72,6 +72,7 @@ class Player:
             if time.time() - self.start_time > 2.7:
                 self.start_time = 0
                 self.moveable = True
+
 
 
     def render(self):
@@ -101,7 +102,8 @@ class Player:
 
     def save(self):
         data = Data(self.name, self.gender)
-        data.pokemons = self.pokemons
+        data.pokemons = self.pokemons.copy()
+        print(f'saved: {self.name}, {self.gender}, {self.pokemons[0].name}')
 
         with open('player.pkl', 'wb') as file:
             pickle.dump(data, file)
@@ -112,13 +114,13 @@ class Player:
             data = pickle.load(file)  # 저장된 객체를 읽어옴
             self.name = data.name
             self.gender = data.gender
-            self.pokemons = data.pokemons
-            if self.gender == "male":
+            self.pokemons = data.pokemons.copy()
+            self.tutorial = True
+            if self.gender == 'male':
                 self.image = load_image("resource/trainer_boy_sprite.png")
             elif self.gender == 'female':
                 self.image = load_image("resource/trainer_girl_sprite.png")
-            self.tutorial = True
-            print(f'loaded: {self.name}, {self.gender}, {self.pokemons}')
+
 
     def heal(self):
         if gameWorld.get_map().type != 'house':

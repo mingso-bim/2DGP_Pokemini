@@ -13,8 +13,8 @@ class Tutorial:
         if Tutorial.font == None:
             Tutorial.font = load_font('resource/font.ttf', 40)
 
-        self.script = ('tv를 보고 SPACE를 누르면',  '저장하고 휴식할 수 있었지?',
-                       '마을 밖으로 나가는 도로에서', '바람이가 기다리고 있어!',
+        self.script = ('tv를 보고 SPACE를 누르면',  '저장하고 휴식할 수 있어!',
+                       '마을 밖으로 나가는 도로에서', '바람이가 기다리고 있을거야!',
                         '바람이와 배틀에서 이길 수 있도록 훈련하자!')
         self.idx = 0
 

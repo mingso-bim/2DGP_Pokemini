@@ -22,11 +22,10 @@ def init():
     gameWorld.add_collision_pair('player:bush', p, None)
 
     effect.b_fade_in()
-    debugMode()
+    #debugMode()
 
 def debugMode():
-    p.setGender('female')
-    p.addPokemon(pokemon.PIPLUP)
+    print(len(p.pokemons))
     p.pokemons[0].level = 9
     p.pokemons[0].exp = 5
 

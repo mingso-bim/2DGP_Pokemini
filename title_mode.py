@@ -108,8 +108,8 @@ def handle_events():
                     select = 0
                 if e.key == SDLK_SPACE:
                     effect.b_fade_out()
+                    gameWorld.p.load()
                     game_framework.change_mode(play_mode)
-                    gameWorld.get_player().load()
 
 
 
