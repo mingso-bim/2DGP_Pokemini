@@ -297,7 +297,8 @@ def handle_events():
         intro.handle_events(e)
 
 def finish():
-    pass
+    effect.b_fade_out()
+    gameWorld.clear()
 
 def pause(): pass
 def resume(): pass

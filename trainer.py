@@ -1,6 +1,7 @@
 from pico2d import draw_rectangle, load_image
 import battle_mode
 import game_framework
+import pokemon
 from pokemon import pokemons
 import ending_mode
 
@@ -15,7 +16,7 @@ class Trainer:
         self.dir = 2
         self.ending = False
         self.pokemons = []
-        self.pokemons.append(pokemons[7])
+        self.pokemons.append(pokemon.CHIMCHAR)
         self.pokemons[0].level = 6
         self.sx, self.sy = 0, 0
         self.visible = True

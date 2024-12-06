@@ -8,7 +8,7 @@ class Bush:
         self.pokemons = []
         self.pokemons.append(pokemon.pokemons[random.randint(0, 7)])
         self.x, self.y = x, y
-        self.battle = True
+        self.battle = False
         # 불러올때 모든 부시 False로 바꾸기 필요
 
     def update(self):

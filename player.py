@@ -1,7 +1,7 @@
 import time
 from pico2d import *
 import pickle
-import battle_mode
+import battle_mode, tutorial_mode
 from stateMachine import *
 from state import *
 
@@ -20,7 +20,7 @@ class Player:
         self.image = None
         self.width, self.height = 0, 0
         self.frame = 0
-        self.x, self.y = 300, 480
+        self.x, self.y = 280, 500
         self.prevX, self.prevY = 200, 200
         self.dirX, self.dirY, self.dir = 1, 1, 0
         self.scrolling = False
@@ -33,6 +33,7 @@ class Player:
         self.stateMachine = StateMachine(self)
         self.stateMachine.start(Idle)
         self.heal_sound = None
+        self.tutorial = False
         self.stateMachine.setTransitions(
             {
                 Idle: {right_down: RunRight, left_down: RunLeft, left_up: RunRight, right_up: RunLeft,
@@ -86,6 +87,12 @@ class Player:
             draw_rectangle(*self.get_bb())
 
     def handle_events(self, e):
+        if self.tutorial == False:
+            if e.key in (SDLK_LEFT, SDLK_DOWN, SDLK_RIGHT, SDLK_UP):
+                game_framework.push_mode(tutorial_mode)
+                self.tutorial = True
+                return
+
         if not self.moveable:
             return
         self.stateMachine.addEvent(('INPUT', e))
@@ -110,6 +117,7 @@ class Player:
                 self.image = load_image("resource/trainer_boy_sprite.png")
             elif self.gender == 'female':
                 self.image = load_image("resource/trainer_girl_sprite.png")
+            self.tutorial = True
             print(f'loaded: {self.name}, {self.gender}, {self.pokemons}')
 
     def heal(self):
@@ -147,6 +155,9 @@ class Player:
             return locX - 15, locY - 25, locX + 25, locY + 20
         return self.x - 15, self.y - 25, self.x + 25, self.y + 20
 
+    def stop(self):
+        self.frame = 0
+        self.stateMachine.start(Idle)
 
     def handle_collision(self, group, other):
         if group == 'player:obstacle':
@@ -171,7 +182,7 @@ class Player:
             self.visible = False
 
         elif group == 'player:bush':
-            if not other.battle:
+            if other.battle or self.pokemons[0].cur_hp <= 0:
                 return
             self.visible = False
             self.stateMachine.start(Idle)

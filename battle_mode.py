@@ -73,7 +73,7 @@ class Battle:
 
 
     def put_meet_script(self):
-        if self.other.name:
+        if hasattr(self.other, 'name'):
             s = '바람이 싸움을 걸어왔다!'
             self.script_q.put(s)
         else:

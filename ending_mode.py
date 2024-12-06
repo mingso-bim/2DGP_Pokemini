@@ -12,7 +12,7 @@ class Ending:
     def __init__(self):
         if Ending.textbox == None:
             Ending.textbox = load_image('resource/textbox.png')
-        if self.font == None:
+        if Ending.font == None:
             Ending.font = load_font('resource/font.ttf', 40)
 
         self.p = gameWorld.get_player()

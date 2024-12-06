@@ -1,4 +1,8 @@
+import time
+
 from pico2d import *
+
+import effect
 import gameWorld
 import pickle
 import bush
@@ -40,11 +44,19 @@ class Portal:
         self.target = target
         self.parent = None
         self.tx, self.ty = 0, 0
+        self.start_time = 0
 
     def get_bb(self):
         return self.x - 30, self.y - 10, self.x + 30, self.y + 10
 
     def handle_collision(self, group, other):
+        if self.start_time == 0:
+            self.start_time = time.time()
+            effect.b_fade_out(0.2)
+
+        elif time.time() - self.start_time < 0.1:
+            return
+
         other.x, other.y = self.tx, self.ty
 
         m = None
@@ -58,6 +70,7 @@ class Portal:
             m = init_road()
             other.scrolling = True
 
+        self.start_time = 0
         gameWorld.world[0][0] = m
 
 
@@ -271,7 +284,7 @@ def init_house():
     m.music.repeat_play()
 
     # portal 생성
-    p = Portal(300, 410, 'village')
+    p = Portal(300, 395, 'village')
     p.tx, p.ty = 330, 320
     m.portal.append(p)
     gameWorld.add_collision_pair('player:portal', None, p)
@@ -304,7 +317,7 @@ def init_village():
         gameWorld.addObject(o, 0)
         gameWorld.add_collision_pair('player:obstacle', None, o)
 
-    p = Portal(330, 360, 'house')
+    p = Portal(330, 375, 'house')
     p.tx, p.ty = 300, 450
     m.portal.append(p)
     gameWorld.add_collision_pair('player:portal', None, p)
