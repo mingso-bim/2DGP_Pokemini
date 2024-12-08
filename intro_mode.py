@@ -1,10 +1,10 @@
 from pico2d import *
-
 import gameWorld
 import game_framework
-from gameWorld import game_width, game_height, p
 import startPokemonEvent_mode, play_mode
 import effect
+
+game_width, game_height = 600, 700
 
 TIME_PER_ACTION = 0.9
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -28,7 +28,7 @@ class Intro:
         self.select = 0
         self.script = ()
         self.scriptIdx = 0
-        self.player = p
+        self.player = gameWorld.p
         self.playerX = 0
         self.playerFrame = 0
         self.textboxLoc = [game_width / 2, game_height * 0.38]

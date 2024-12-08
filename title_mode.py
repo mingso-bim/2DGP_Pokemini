@@ -2,9 +2,10 @@ from pico2d import *
 import effect
 import gameWorld
 import game_framework
-from gameWorld import game_height, game_width
 from UI import UI, Text
 import intro_mode, play_mode
+
+game_width, game_height = 600, 700
 
 def init():
     global select

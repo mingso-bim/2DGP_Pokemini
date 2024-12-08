@@ -1,6 +1,6 @@
 import gameWorld
 import game_framework
-import play_mode, battle_mode
+import play_mode, battle_mode, title_mode
 from pico2d import *
 
 trainer = None
@@ -18,10 +18,11 @@ class Ending:
         self.p = gameWorld.get_player()
         self.t = trainer
 
-        self.meet_script = (str(self.p.name) + '!', '모험을 떠나기 전에', '얼마나 준비되었나 볼까?', '승부야!')
-        self.defeat_script = ('아직 준비가 더 필요할 것 같은데?', '이렇게 약해서는 모험을 떠나지 못할 거야!')
-        self.victory_script = ('꽤나 강해졌구나?', '다음엔 지지 않을거야!', '그럼 즐거운 모험 되길 바래!')
-        self.return_script = ('나랑 승부해서 이기기 전엔 갈 수 없어!', '포켓몬을 회복하고 오도록 해')
+        s = '바람: ' + str(self.p.name) + '!'
+        self.meet_script = (s, '모험을 떠나기 전에', '얼마나 준비되었나 볼까?', '승부야!')
+        self.defeat_script = ('바람: 아직 준비가 더 필요할 것 같은데?', '이렇게 약해서는 모험을 떠나지 못할 거야!')
+        self.victory_script = ('바람: 꽤나 강해졌구나?', '다음엔 지지 않을거야!', '그럼 즐거운 모험 되길 바래!')
+        self.return_script = ('바람: 나랑 승부해서 이기기 전엔 갈 수 없어!', '포켓몬을 회복하고 오도록 해')
 
         self.idx = 0
 
@@ -73,7 +74,7 @@ class Ending:
             self.t.visible = True
             self.p.visible = True
             self.p.ending = True
-            game_framework.pop_mode()
+            game_framework.change_mode(title_mode)
 
         elif self.state == 'return':
             self.t.visible = True

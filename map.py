@@ -1,12 +1,11 @@
 import time
-
 from pico2d import *
-
 import effect
 import gameWorld
 import pickle
 import bush
 import trainer
+
 
 game_width = 600
 game_height = 700

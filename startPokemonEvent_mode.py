@@ -2,11 +2,11 @@ from pico2d import *
 import map
 import gameWorld
 import game_framework
-from gameWorld import game_width, game_height
 import play_mode
 import pokemon
 import effect
 
+game_width, game_height = 600, 700
 
 class Pokeball:
     def __init__(self, p):
