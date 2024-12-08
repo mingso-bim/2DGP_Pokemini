@@ -20,12 +20,11 @@ def init():
     gameWorld.add_collision_pair('player:bush', p, None)
 
     effect.b_fade_in()
-    #debugMode()
 
 def debugMode():
-    print(len(p.pokemons))
-    p.pokemons[0].level = 9
-    p.pokemons[0].exp = 5
+    print(f'{p.pokemons[0].level}')
+    #p.pokemons[0].level = 9
+    #p.pokemons[0].exp = 5
 
 def finish():
     effect.b_fade_out()
