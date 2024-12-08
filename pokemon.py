@@ -23,10 +23,13 @@ class Pokemon:
         self.drop_exp = randint(14, 20)
         self.max_pp = 300
         self.cur_pp = self.max_pp
-        self.max_hp = 30
+        self.max_hp = 20
         self.cur_hp = self.max_hp
         self.status_turn = 0
         self.renderXY = []
+
+    def level_up(self):
+        self.max_hp += 4
 
     def addSkill(self, s):
         if len(self.skill) == 4:

@@ -22,9 +22,10 @@ def init():
     effect.b_fade_in()
 
 def debugMode():
-    print(f'{p.pokemons[0].level}')
-    #p.pokemons[0].level = 9
-    #p.pokemons[0].exp = 5
+    print(f'{p.pokemons[0].level}, {p.pokemons[0].max_hp}, {p.pokemons[0].max_hp}')
+    #p.pokemons[0].level = 5
+    #p.pokemons[0].max_hp = 20 + (p.pokemons[0].level * 4)
+
 
 def finish():
     effect.b_fade_out()

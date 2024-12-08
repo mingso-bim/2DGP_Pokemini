@@ -110,42 +110,42 @@ class Map:
                 t.sx, t.sy = self.world_to_camera(t.x, t.y)
                 t.sy += self.ch
                 t.render()
-
-                tl, tb, tr, tt = t.get_bb()
-                sl, sb = self.world_to_camera(tl, tb)
-                sr, st = self.world_to_camera(tr, tt)
-                sb += self.ch
-                st += self.ch
-                sb = clamp(self.ch, sb, self.ch * 2)
-                st = clamp(self.ch, st, self.ch * 2)
-                draw_rectangle(sl, sb, sr, st)
+                #
+                # tl, tb, tr, tt = t.get_bb()
+                # sl, sb = self.world_to_camera(tl, tb)
+                # sr, st = self.world_to_camera(tr, tt)
+                # sb += self.ch
+                # st += self.ch
+                # sb = clamp(self.ch, sb, self.ch * 2)
+                # st = clamp(self.ch, st, self.ch * 2)
+                # draw_rectangle(sl, sb, sr, st)
 
         self.touch_pad.render()
 
-        if self.scrolling:
-            for o in self.ob:
-                sl, sb = self.world_to_camera(o.left, o.bottom)
-                sr, st = self.world_to_camera(o.right, o.top)
-                sb += self.ch
-                st += self.ch
-                sb = clamp(self.ch, sb, self.ch * 2)
-                st = clamp(self.ch, st, self.ch * 2)
-                draw_rectangle(sl, sb, sr, st)
+        # if self.scrolling:
+        #     for o in self.ob:
+        #         sl, sb = self.world_to_camera(o.left, o.bottom)
+        #         sr, st = self.world_to_camera(o.right, o.top)
+        #         sb += self.ch
+        #         st += self.ch
+        #         sb = clamp(self.ch, sb, self.ch * 2)
+        #         st = clamp(self.ch, st, self.ch * 2)
+        #         draw_rectangle(sl, sb, sr, st)
 
-            for p in self.portal:
-                sl, sb, sr, st = p.get_bb()
-                sl, sb = self.world_to_camera(sl, sb)
-                sr, st = self.world_to_camera(sr, st)
-                sb += self.ch
-                st += self.ch
-                sb = clamp(self.ch, sb, self.ch * 2)
-                st = clamp(self.ch, st, self.ch * 2)
-                draw_rectangle(sl, sb, sr, st)
-        else:
-            for o in self.ob:
-                draw_rectangle(*o.get_bb())
-            for p in self.portal:
-                draw_rectangle(*p.get_bb())
+            # for p in self.portal:
+            #     sl, sb, sr, st = p.get_bb()
+            #     sl, sb = self.world_to_camera(sl, sb)
+            #     sr, st = self.world_to_camera(sr, st)
+            #     sb += self.ch
+            #     st += self.ch
+            #     sb = clamp(self.ch, sb, self.ch * 2)
+            #     st = clamp(self.ch, st, self.ch * 2)
+            #     draw_rectangle(sl, sb, sr, st)
+        # else:
+        #     for o in self.ob:
+        #         draw_rectangle(*o.get_bb())
+        #     for p in self.portal:
+        #         draw_rectangle(*p.get_bb())
 
     def update(self):
         if gameWorld.get_player() == None:

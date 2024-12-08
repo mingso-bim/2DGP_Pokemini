@@ -1,4 +1,6 @@
 from random import randint
+
+import effect
 import gameWorld
 from pico2d import *
 import game_framework
@@ -65,6 +67,7 @@ class Battle:
         self.cur_script = self.script_q.get()
         self.turn = 'player'
         self.playing = False
+        self.o_damage = 0
 
         self.player_attacked = False
 
@@ -158,6 +161,7 @@ class Battle:
                     e = self.p_pokemon.exp - self.p_pokemon.max_exp
                     self.p_pokemon.level += 1
                     self.p_pokemon.exp = e
+                    self.p_pokemon.level_up()
             return
 
         skill = caster.skill[skill]
@@ -196,7 +200,10 @@ class Battle:
         if skill.type == caster.type:
             efficient *= 1.2
 
-        subject.cur_hp -= int(skill.attack * efficient) + caster.level * 2
+        if caster == self.p_pokemon:
+            subject.cur_hp -= int(skill.attack * efficient) + caster.level * 2
+        else:
+            self.o_damage = int(skill.attack * efficient) + caster.level * 2
 
         if subject.cur_hp <= 0:
             s = subject.name + '은(는) 쓰러졌다!'
@@ -211,6 +218,7 @@ class Battle:
                     e = self.p_pokemon.exp - self.p_pokemon.max_exp
                     self.p_pokemon.level += 1
                     self.p_pokemon.exp = e
+                    self.p_pokemon.level_up()
             else:
                 s = subject.name + '은(는) 쓰러졌다!'
             return
@@ -346,7 +354,10 @@ class Battle:
         self.o_pokemon.render('f', gameWorld.game_width * 0.7, gameWorld.game_height * 0.87)
         Battle.UI.clip_draw(0, 80, 120, 29, gameWorld.game_width * 0.199, gameWorld.game_height * 0.92, 119*2, 58)
         Battle.font.draw(gameWorld.game_width * 0.01, gameWorld.game_height * 0.93, self.o_pokemon.name)
-        Battle.UI.clip_draw(1 + 8 * (self.o_pokemon.level), 1, 8, 7, gameWorld.game_width * 0.285, gameWorld.game_height * 0.928, 16, 14)
+
+        # 레벨 render
+        Battle.UI.clip_draw(8 * self.o_pokemon.level, 0, 8, 7, gameWorld.game_width * 0.285, gameWorld.game_height * 0.928, 16, 14)
+
         # 체력 바 render
         hp_percent = self.o_pokemon.cur_hp / self.o_pokemon.max_hp
         length = int(hp_percent * 48)
@@ -369,7 +380,9 @@ class Battle:
         # 내 포켓몬 UI
         self.p_pokemon.render('b', gameWorld.game_width * 0.23, gameWorld.game_height * 0.73)
         Battle.UI.clip_draw(0, 109-72, 120, 41, gameWorld.game_width * 0.81, gameWorld.game_height * 0.70, 119*2, 41 * 2)
-        Battle.UI.clip_draw(1 + 8 * self.p_pokemon.level, 1, 8, 7, gameWorld.game_width * 0.934, gameWorld.game_height * 0.725, 16, 14)
+
+        # 레벨 render
+        Battle.UI.clip_draw(8 * self.p_pokemon.level, 0, 8, 7, gameWorld.game_width * 0.934, gameWorld.game_height * 0.725, 16, 14)
 
         #체력 바 render
         if self.p_pokemon.cur_hp < 0:
@@ -399,28 +412,29 @@ class Battle:
             h = 11
         Battle.UI.clip_draw(100, h, 20, 8, gameWorld.game_width * 0.71, gameWorld.game_height * 0.69 + 2, 40, 16)
 
+        # 체력
         if self.p_pokemon.cur_hp < 0:
             self.p_pokemon.cur_hp = 0
         hp1 = self.p_pokemon.cur_hp // 100
         if hp1 != 0:
-            Battle.UI.clip_draw(9 * hp1, 1, 8, 7, gameWorld.game_width * 0.83, gameWorld.game_height * 0.67, 16, 14)
+            Battle.UI.clip_draw(8 * hp1, 0, 8, 7, gameWorld.game_width * 0.83, gameWorld.game_height * 0.67, 16, 14)
         hp2 = (self.p_pokemon.cur_hp - 100*hp1) // 10
-        Battle.UI.clip_draw(9 * hp2, 1, 8, 7, gameWorld.game_width * 0.855, gameWorld.game_height * 0.67, 16, 14)
+        Battle.UI.clip_draw(8 * hp2, 0, 8, 7, gameWorld.game_width * 0.855, gameWorld.game_height * 0.67, 16, 14)
         hp3 = (self.p_pokemon.cur_hp - 100 * hp1 - 10 * hp2)
-        Battle.UI.clip_draw(9 * hp3, 1, 8, 7, gameWorld.game_width * 0.88, gameWorld.game_height * 0.67, 16, 14)
+        Battle.UI.clip_draw(8 * hp3, 0, 8, 7, gameWorld.game_width * 0.88, gameWorld.game_height * 0.67, 16, 14)
         hp1 = self.p_pokemon.max_hp // 100
 
         if hp1 != 0:
-            Battle.UI.clip_draw(9 * hp1, 1, 8, 7, gameWorld.game_width * 0.94, gameWorld.game_height * 0.67, 16, 14)
+            Battle.UI.clip_draw(8 * hp1, 0, 8, 7, gameWorld.game_width * 0.94, gameWorld.game_height * 0.67, 16, 14)
             hp2 = (self.p_pokemon.max_hp - hp1 * 100) // 10
-            Battle.UI.clip_draw(9 * hp2, 1, 8, 7, gameWorld.game_width * 0.965, gameWorld.game_height * 0.67, 16, 14)
+            Battle.UI.clip_draw(8 * hp2, 0, 8, 7, gameWorld.game_width * 0.965, gameWorld.game_height * 0.67, 16, 14)
             hp3 = (self.p_pokemon.max_hp - hp1 * 100 - hp2 * 10)
-            Battle.UI.clip_draw(9 * hp3, 1, 8, 7, gameWorld.game_width * 0.99, gameWorld.game_height * 0.67, 16, 14)
+            Battle.UI.clip_draw(8 * hp3, 0, 8, 7, gameWorld.game_width * 0.99, gameWorld.game_height * 0.67, 16, 14)
         else:
             hp2 = (self.p_pokemon.max_hp - hp1 * 100) // 10
-            Battle.UI.clip_draw(9 * hp2, 1, 8, 7, gameWorld.game_width * 0.94, gameWorld.game_height * 0.67, 16, 14)
+            Battle.UI.clip_draw(8 * hp2, 0, 8, 7, gameWorld.game_width * 0.94, gameWorld.game_height * 0.67, 16, 14)
             hp3 = (self.p_pokemon.max_hp - hp1 * 100 - hp2 * 10)
-            Battle.UI.clip_draw(9 * hp3, 1, 8, 7, gameWorld.game_width * 0.965, gameWorld.game_height * 0.67, 16, 14)
+            Battle.UI.clip_draw(8 * hp3, 0, 8, 7, gameWorld.game_width * 0.965, gameWorld.game_height * 0.67, 16, 14)
         Battle.font.draw(gameWorld.game_width * 0.67, gameWorld.game_height * 0.725, self.p_pokemon.name)
 
         Battle.textbox.clip_draw(0, 0, 250, 44, gameWorld.game_width * 0.5, gameWorld.game_height * 0.56, 500 * 1.2, 88)
@@ -430,7 +444,11 @@ class Battle:
     def update(self):
         self.o_pokemon.update()
         self.script_update()
-
+        s = str(self.o_pokemon.name) + '의'
+        if s in self.cur_script:
+            if self.o_damage > 0:
+                self.p_pokemon.cur_hp -= self.o_damage
+                self.o_damage = 0
 
     def select_main(self, e):
         if e.key == SDLK_RIGHT:
@@ -487,13 +505,16 @@ def init():
     battle = Battle()
     Battle.music.repeat_play()
     gameWorld.addObject(battle, 1)
+    effect.b_fade_in()
 
 def finish():
     gameWorld.get_player().visible = True
     battle.music.stop()
     battle.sound_win.stop()
     gameWorld.get_map().music.play()
+    effect.b_fade_out()
     gameWorld.removeObject(battle)
+    effect.b_fade_in()
 
 def update():
     gameWorld.update()

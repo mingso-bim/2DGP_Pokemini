@@ -2,6 +2,7 @@ import time
 from pico2d import *
 import pickle
 import battle_mode, tutorial_mode
+import effect
 from stateMachine import *
 from state import *
 
@@ -82,9 +83,10 @@ class Player:
         if self.scrolling:
             sx = self.x - gameWorld.get_map().window_left
             sy = self.y - gameWorld.get_map().window_bottom + gameWorld.get_map().ch
-            draw_rectangle(*self.get_bb(sx, sy))
+            #draw_rectangle(*self.get_bb(sx, sy))
         else:
-            draw_rectangle(*self.get_bb())
+            pass
+            #draw_rectangle(*self.get_bb())
 
     def handle_events(self, e):
         if self.tutorial == False:
@@ -188,6 +190,8 @@ class Player:
             self.visible = False
             self.stateMachine.start(Idle)
             self.frame = 0
+
+            effect.b_fade_out()
 
             battle_mode.other = other
             game_framework.push_mode(battle_mode)

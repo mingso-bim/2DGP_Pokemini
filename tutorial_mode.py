@@ -14,7 +14,7 @@ class Tutorial:
             Tutorial.font = load_font('resource/font.ttf', 40)
 
         self.script = ('키보드 방향키로 움직일 수 있고', 'SPACE로 결정할 수 있어!', 'tv를 보고 SPACE를 누르면',  '저장하고 휴식할 수 있어!',
-                       '마을 밖으로 나가는 도로에서', '바람이가 기다리고 있을 거야',
+                       '마을 위쪽으로 가면 나오는 도로에서', '바람이가 기다리고 있을 거야',
                         '바람이와 배틀에서 이길 수 있도록 훈련하자!')
         self.idx = 0
 
