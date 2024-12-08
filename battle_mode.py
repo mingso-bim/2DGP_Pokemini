@@ -4,7 +4,6 @@ import effect
 import gameWorld
 from pico2d import *
 import game_framework
-from battle_state import *
 from skill import Type, Status
 from queue import Queue
 from skill import advantage, disadvantage
@@ -449,6 +448,7 @@ class Battle:
             if self.o_damage > 0:
                 self.p_pokemon.cur_hp -= self.o_damage
                 self.o_damage = 0
+                Battle.sound_attack.play()
 
     def select_main(self, e):
         if e.key == SDLK_RIGHT:
