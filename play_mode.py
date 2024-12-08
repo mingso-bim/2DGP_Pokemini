@@ -2,8 +2,6 @@ from pico2d import *
 import game_framework
 import map
 import gameWorld
-import pokemon, skill
-import skill
 import effect
 
 def init():

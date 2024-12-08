@@ -6,17 +6,6 @@ from gameWorld import game_height, game_width
 from UI import UI, Text
 import intro_mode, play_mode
 
-class Title:
-    def __init__(self):
-        pass
-
-    def render(self):
-        pass
-
-    def update(self):
-        pass
-
-
 def init():
     global select
     select = 0

@@ -36,6 +36,7 @@ class Player:
         self.stateMachine.start(Idle)
         self.heal_sound = None
         self.tutorial = False
+        self.ending = False
         self.stateMachine.setTransitions(
             {
                 Idle: {right_down: RunRight, left_down: RunLeft, left_up: RunRight, right_up: RunLeft,
@@ -61,10 +62,10 @@ class Player:
 
     def setGender(self, _gender):
         self.gender = _gender
-        if _gender == 'male':
-            self.image = Player.image_boy
-        elif _gender == 'female':
-            self.image = Player.image_girl
+        if self.gender == 'male':
+            self.image = load_image("resource/trainer_boy_sprite.png")
+        elif self.gender == 'female':
+            self.image = load_image("resource/trainer_girl_sprite.png")
 
     def update(self):
         self.stateMachine.update()
@@ -72,8 +73,6 @@ class Player:
             if time.time() - self.start_time > 2.7:
                 self.start_time = 0
                 self.moveable = True
-
-
 
     def render(self):
         if self.visible == False:

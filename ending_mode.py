@@ -72,6 +72,7 @@ class Ending:
             self.t.ending = True
             self.t.visible = True
             self.p.visible = True
+            self.p.ending = True
             game_framework.pop_mode()
 
         elif self.state == 'return':
